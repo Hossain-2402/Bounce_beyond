@@ -146,7 +146,7 @@ void iKeyboard(unsigned char key) {
 void iTimer() {
 	if (is_animating) {
 		frame_counter++;
-		// rotating_angle = 0; 
+		rotating_angle = 0; 
 
 		
 		if (frame_counter <= 60) {
