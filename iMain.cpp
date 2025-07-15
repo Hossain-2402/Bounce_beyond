@@ -118,14 +118,12 @@ void iMouse(int button, int state, int mx, int my) {
 void iKeyboard(unsigned char key) {
 	if (key == 'd') {
 		if(!is_animating) rotating_angle -= 15;
-		current_rotation_angle = rotating_angle;
 
 		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
 		else x_of_play_screen_background -= 1;
 	}
 	if (key == 'a') {
 		if (!is_animating) rotating_angle += 15;
-		current_rotation_angle = rotating_angle;
 
 
 		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
@@ -148,7 +146,7 @@ void iKeyboard(unsigned char key) {
 void iTimer() {
 	if (is_animating) {
 		frame_counter++;
-		rotating_angle = 0;
+		// rotating_angle = 0; 
 
 		
 		if (frame_counter <= 60) {
@@ -166,7 +164,6 @@ void iTimer() {
 			ball_y = 23 * vh;
 			is_animating = false;
 			frame_counter = 0;
-			rotating_angle = current_rotation_angle;
 		}
 	}
 	iSetTimer(50000 / 60, iTimer);
@@ -196,3 +193,11 @@ int main() {
 	iStart();
 	return 0;
 }
+
+/*
+	Questions:
+		- how to generate "Heat box" ( "iTimer()" > "rotate_angle = 0" )
+		- Code run korle "ERROR line" dekhay keno ?
+		- "Space" press korle "d" bondho hoye jay keno?
+
+*/
