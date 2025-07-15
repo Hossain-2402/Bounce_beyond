@@ -1,3 +1,4 @@
+
 #include "iGraphics.h"
 #include<string.h>
 
@@ -8,21 +9,21 @@ int vh = 5;
 int vw = 10;
 
 // Images
-	int landing_page_background_image;
-	int button_image;
-	int ball_image;
-	int play_screen_background_image;
-	char ball_images[3][100] = { "ball_image_10.png", "ball_image_2.png", "ball_image_8.png",};
+int landing_page_background_image;
+int button_image;
+int ball_image;
+int play_screen_background_image;
+char ball_images[3][100] = { "ball_image_10.png", "ball_image_2.png", "ball_image_8.png", };
 
 // Toggle buttons
-	int play_button_clicked = 0;
-	int levels_button_clicked = 0;
-	int quit_button_clicked = 0;
+int play_button_clicked = 0;
+int levels_button_clicked = 0;
+int quit_button_clicked = 0;
 
 // Positions
-	double x_of_play_screen_background = 0;
-	double ball_y = 23 * vh;
-	double rotating_angle = 0;
+double x_of_play_screen_background = 0;
+double ball_y = 23 * vh;
+double rotating_angle = 0;
 
 // Variables
 bool is_animating = false;
@@ -94,7 +95,7 @@ void iPassiveMouseMove(int mx, int my) {
 }
 
 void iMouse(int button, int state, int mx, int my) {
-	printf("%d, %d \n", mx/vw,my/vh);
+	printf("%d, %d \n", mx / vw, my / vh);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 			play_button_clicked = 1;
@@ -117,7 +118,7 @@ void iMouse(int button, int state, int mx, int my) {
 
 void iKeyboard(unsigned char key) {
 	if (key == 'd') {
-		if(!is_animating) rotating_angle -= 15;
+		if (!is_animating) rotating_angle -= 15;
 
 		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
 		else x_of_play_screen_background -= 1;
@@ -146,20 +147,20 @@ void iKeyboard(unsigned char key) {
 void iTimer() {
 	if (is_animating) {
 		frame_counter++;
-		rotating_angle = 0; 
+		rotating_angle = 0;
 
-		
+
 		if (frame_counter <= 60) {
 			ball_y += ((50 * vh) / 60);
 		}
-		
+
 		else if (frame_counter > 60 && frame_counter <= 120) {
 			if (ball_y <= 23 * vh) ball_y = 23 * vh;
 			else ball_y -= ((50 * vh) / 60);
 
 		}
 
-		
+
 		if (frame_counter >= 120) {
 			ball_y = 23 * vh;
 			is_animating = false;
@@ -195,9 +196,9 @@ int main() {
 }
 
 /*
-	Questions:
-		- how to generate "Heat box" ( "iTimer()" > "rotate_angle = 0" )
-		- Code run korle "ERROR line" dekhay keno ?
-		- "Space" press korle "d" bondho hoye jay keno?
-
+Questions:
+- how to generate "Heat box" ( "iTimer()" > "rotate_angle = 0" )
+- Code run korle "ERROR line" dekhay keno ?
+- "Space" press korle "d" bondho hoye jay keno?
+- rafi
 */
