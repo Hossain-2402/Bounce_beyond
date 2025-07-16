@@ -1,6 +1,6 @@
 #include "iGraphics.h"
-#include<string.h>
-
+#include <cmath>
+#include <cstring>
 using namespace std;
 
 // vw & vh
@@ -12,13 +12,18 @@ int vw = 10;
 	int button_image;
 	int ball_image;
 	int play_screen_background_image;
-	char ball_images[3][100] = { "ball_image_10.png", "ball_image_2.png", "ball_image_8.png",};
+	char ball_images[3][100] = { 
+		"ball_image_10.png", 
+		"ball_image_2.png", 
+		"ball_image_8.png",
+	};
 
 // Toggle buttons
 	int play_button_enlarge = 0;
 	int levels_button_enlarge = 0;
 	int credits_button_enlarge = 0;
 	int quit_button_enlarge = 0;
+
 	int play_button_clicked = 0;
 	int levels_button_clicked = 0;
 	int credits_button_clicked = 0;
@@ -26,15 +31,31 @@ int vw = 10;
 
 // Positions
 	double x_of_play_screen_background = 0;
-	double ball_y = 23 * vh;
+	double ball_x = 20 * vw;	//start X
+	double ball_y = 23 * vh;	//start Y
 	double rotating_angle = 0;
 
-// Variables
+//Movement Flags
+	bool isDPressed = false ;
+	bool isAPressed = false ;
+	bool isJumping = false;
+
+//Jump Animation
 bool is_animating = false;
-int frame_counter;
+int frame_counter = 0;
 const double jumpHeight = 100; // Target jump height in pixels
 double current_rotation_angle;
 int ball_img_index = 0;
+
+// --- New physics state ---
+double ball_vx = 0.0;
+double ball_vy = 0.0;
+
+// --- Physics constants ---
+const double GRAVITY = -0.5;         // pixels/tick²
+const double JUMP_SPEED = 16.0;         // initial jump velocity
+//const double MOVE_SPEED = 2.0;          // horizontal speed
+const double GROUND_Y = 23 * vh;      // your floor level
 
 void enlarge_play()
 {
@@ -61,19 +82,6 @@ void enlarge_quit()
 	iText(47.5 * vw, 25 * vh, "QUIT", GLUT_BITMAP_HELVETICA_18);
 }
 
-void show_play_screen() {
-	levels_button_clicked = 0;
-	quit_button_clicked = 0;
-
-	for (int i = 0; i < 5; i++) {
-		iShowImage((x_of_play_screen_background + i * 100) * vw, 0, 100 * vw, 100 * vh, play_screen_background_image);
-	}
-
-	Rotate((20 * vw + 12.5 * vh), 35.5 * vh, rotating_angle);
-	iShowImage(20 * vw, ball_y, 25 * vh, 25 * vh, ball_image);
-	iUnRotate();
-}
-
 void show_levels_screen() {
 	play_button_clicked = 0;
 	quit_button_clicked = 0;
@@ -82,7 +90,7 @@ void show_levels_screen() {
 	iFilledRectangle(0, 0, 100 * vw, 100 * vh);
 
 	iSetColor(0, 0, 0);
-	iText(0, 80 * vh, "Levels Screen");
+	iText(0, 80 * vh, "Levels Screen", GLUT_BITMAP_HELVETICA_18);
 }
 
 void create_landing_page() {
@@ -109,14 +117,38 @@ void create_landing_page() {
 	if (levels_button_enlarge == 1) enlarge_levels();
 	if (credits_button_enlarge == 1) enlarge_credits();
 	if (quit_button_enlarge == 1) enlarge_quit();
-	if (play_button_clicked == 1) show_play_screen();
-	if (levels_button_clicked == 1) show_levels_screen();
+	
 	if (quit_button_clicked == 1) exit(0);
+}
+
+void show_play_screen() {
+	levels_button_clicked = 0;
+	credits_button_clicked = 0;
+	quit_button_clicked = 0;
+
+	//background tiles
+	for (int i = 0; i < 5; i++) {
+		iShowImage((int)(x_of_play_screen_background + i * 100) * vw, 0, 100 * vw, 100 * vh, play_screen_background_image);
+	}
+
+	//draw and rotate ball sprite
+	iRotate((int)(ball_x + 12.5 * vh), (int)(ball_y + 12.5*vh), rotating_angle);
+	iShowImage((int)ball_x, (int)ball_y, 25 * vh, 25 * vh, ball_image);
+	iUnRotate();
 }
 
 void iDraw() {
 	iClear();
-	create_landing_page();
+
+	if (play_button_clicked) {
+		show_play_screen();        // <-- now draws & rotates your bouncing ball
+	}
+	else if (levels_button_clicked) {
+		show_levels_screen();
+	}
+	else {
+		create_landing_page();
+	}
 }
 
 void iMouseMove(int mx, int my) {
@@ -179,57 +211,54 @@ void iMouse(int button, int state, int mx, int my) {
 }
 
 void iKeyboard(unsigned char key) {
-	if (key == 'd') {
-		if(!is_animating) rotating_angle -= 15;
-
-		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
-		else x_of_play_screen_background -= 1;
-	}
-	if (key == 'a') {
-		if (!is_animating) rotating_angle += 15;
-
-
-		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
-		else x_of_play_screen_background += 1;
-
-	}
-	if (key == ' ' && !is_animating) {
-		is_animating = true;
-		frame_counter = 0;
-	}
+	if (key == 'd') isDPressed = true;
+	else isDPressed = false;
+	
+	if (key == 'a') isAPressed = true;
+	else isAPressed = false;
+	
+	if (key == ' ') {
+        // only allow a new jump if you’re on (or very near) the ground
+        if (!isJumping) {
+			isJumping = true;
+            ball_vy = JUMP_SPEED;
+        }
+    }
 	if (key == 'c') {
-
-		if (ball_img_index >= 2) ball_img_index = 0;
-		else ball_img_index++;
+		ball_img_index = (ball_img_index + 1) % 3;
 		ball_image = iLoadImage(ball_images[ball_img_index]);
-
 	}
 }
 
+
+
+
 void iTimer() {
-	if (is_animating) {
-		frame_counter++;
-		rotating_angle = 0; 
 
-		
-		if (frame_counter <= 60) {
-			ball_y += ((50 * vh) / 60);
-		}
-		
-		else if (frame_counter > 60 && frame_counter <= 120) {
-			if (ball_y <= 23 * vh) ball_y = 23 * vh;
-			else ball_y -= ((50 * vh) / 60);
+	//Horizontal movement
+	if (isDPressed) {
+		rotating_angle -= 15;
+		x_of_play_screen_background -= 1;
+		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
+	}
 
-		}
+	if (isAPressed) {
+		rotating_angle += 15;
+		x_of_play_screen_background += 1;
+		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
+	}
 
-		
-		if (frame_counter >= 120) {
-			ball_y = 23 * vh;
-			is_animating = false;
-			frame_counter = 0;
+	//Jump and gravity
+	if (isJumping){
+		ball_vy += GRAVITY;
+		ball_y += ball_vy;
+		if (ball_y < GROUND_Y) {
+			ball_y = GROUND_Y;
+			isJumping = false;
+			ball_vy = 0;
 		}
 	}
-	iSetTimer(50000 / 60, iTimer);
+	
 }
 
 void iSpecialKeyboard(unsigned char key) {
