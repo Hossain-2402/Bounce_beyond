@@ -69,9 +69,9 @@ void show_play_screen() {
 		iShowImage((x_of_play_screen_background + i * 100) * vw, 0, 100 * vw, 100 * vh, play_screen_background_image);
 	}
 
-	/*iRotate((20 * vw + 12.5 * vh), 35.5 * vh, rotating_angle);
+	Rotate((20 * vw + 12.5 * vh), 35.5 * vh, rotating_angle);
 	iShowImage(20 * vw, ball_y, 25 * vh, 25 * vh, ball_image);
-	iUnRotate();*/
+	iUnRotate();
 }
 
 void show_levels_screen() {
