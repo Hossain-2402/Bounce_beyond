@@ -35,7 +35,7 @@ int vw = 10;
 	double ball_x = 20 * vw;	//start X
 	double ball_y = 23 * vh;	//start Y
 	double rotating_angle = 0;
-	double OBSTACLE_Y = 100;
+	double OBSTACLE_X = 100;
 
 //Movement Flags
 	bool isDPressed = false ;
@@ -86,13 +86,13 @@ void enlarge_quit()
 }
 
 void move_obstacle(int moving_direction) { // moving_direction = 1 (moving RIGHT) moving_direction = -1 (moving LEFT)
-	if (OBSTACLE_Y <= -20) {
-		OBSTACLE_Y = 110; 
+	if (OBSTACLE_X <= -20) {
+		OBSTACLE_X = 110; 
 	}
-	else if (OBSTACLE_Y >= 110) {
-		OBSTACLE_Y = -20; 
+	else if (OBSTACLE_X >= 110) {
+		OBSTACLE_X = -20; 
 	}
-	OBSTACLE_Y += (moving_direction)* 1;
+	OBSTACLE_X += (moving_direction)* 1;
 }
 void show_levels_screen() {
 	play_button_clicked = 0;
@@ -143,7 +143,7 @@ void show_play_screen() {
 		iShowImage((int)(x_of_play_screen_background + i * 100) * vw, 0, 100 * vw, 100 * vh, play_screen_background_image);
 	}
 
-	iShowImage(OBSTACLE_Y*vw,50*vh,20*vw,20*vh,obstacle_image_4);
+	iShowImage(OBSTACLE_X*vw,50*vh,20*vw,20*vh,obstacle_image_4);
 
 	//draw and rotate ball sprite
 	iRotate((int)(ball_x + 12.5 * vh), (int)(ball_y + 12.5*vh), rotating_angle);
