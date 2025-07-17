@@ -17,6 +17,7 @@ int vw = 10;
 		"ball_image_2.png", 
 		"ball_image_8.png",
 	};
+	int obstacle_image_4;
 
 // Toggle buttons
 	int play_button_enlarge = 0;
@@ -34,6 +35,7 @@ int vw = 10;
 	double ball_x = 20 * vw;	//start X
 	double ball_y = 23 * vh;	//start Y
 	double rotating_angle = 0;
+	double OBSTACLE_Y = 100;
 
 //Movement Flags
 	bool isDPressed = false ;
@@ -41,21 +43,22 @@ int vw = 10;
 	bool isJumping = false;
 
 //Jump Animation
-bool is_animating = false;
-int frame_counter = 0;
-const double jumpHeight = 100; // Target jump height in pixels
-double current_rotation_angle;
-int ball_img_index = 0;
+	bool is_animating = false;
+	int frame_counter = 0;
+	const double jumpHeight = 100; // Target jump height in pixels
+	double current_rotation_angle;
+	int ball_img_index = 0;
 
 // --- New physics state ---
-double ball_vx = 0.0;
-double ball_vy = 0.0;
+	double ball_vx = 0.0;
+	double ball_vy = 0.0;
 
 // --- Physics constants ---
-const double GRAVITY = -0.5;         // pixels/tick²
-const double JUMP_SPEED = 16.0;         // initial jump velocity
-//const double MOVE_SPEED = 2.0;          // horizontal speed
-const double GROUND_Y = 23 * vh;      // your floor level
+	const double GRAVITY = -0.5;         // pixels/tick²
+	const double JUMP_SPEED = 16.0;         // initial jump velocity
+	//const double MOVE_SPEED = 2.0;          // horizontal speed
+	const double GROUND_Y = 23 * vh;      // your floor level
+
 
 void enlarge_play()
 {
@@ -82,6 +85,15 @@ void enlarge_quit()
 	iText(47.5 * vw, 25 * vh, "QUIT", GLUT_BITMAP_HELVETICA_18);
 }
 
+void move_obstacle(int moving_direction) { // moving_direction = 1 (moving RIGHT) moving_direction = -1 (moving LEFT)
+	if (OBSTACLE_Y <= -20) {
+		OBSTACLE_Y = 110; 
+	}
+	else if (OBSTACLE_Y >= 110) {
+		OBSTACLE_Y = -20; 
+	}
+	OBSTACLE_Y += (moving_direction)* 1;
+}
 void show_levels_screen() {
 	play_button_clicked = 0;
 	quit_button_clicked = 0;
@@ -130,6 +142,8 @@ void show_play_screen() {
 	for (int i = 0; i < 5; i++) {
 		iShowImage((int)(x_of_play_screen_background + i * 100) * vw, 0, 100 * vw, 100 * vh, play_screen_background_image);
 	}
+
+	iShowImage(OBSTACLE_Y*vw,50*vh,20*vw,20*vh,obstacle_image_4);
 
 	//draw and rotate ball sprite
 	iRotate((int)(ball_x + 12.5 * vh), (int)(ball_y + 12.5*vh), rotating_angle);
@@ -189,7 +203,8 @@ void iPassiveMouseMove(int mx, int my) {
 }
 
 void iMouse(int button, int state, int mx, int my) {
-	printf("%d, %d \n", mx/vw,my/vh);
+
+	// printf("%d, %d \n", mx/vw,my/vh);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 			play_button_clicked = 1;
@@ -238,14 +253,21 @@ void iTimer() {
 	//Horizontal movement
 	if (isDPressed) {
 		rotating_angle -= 15;
+
 		x_of_play_screen_background -= 1;
 		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
+
+		move_obstacle(-1); // -1 means moving LEFT
+
 	}
 
 	if (isAPressed) {
 		rotating_angle += 15;
+
 		x_of_play_screen_background += 1;
 		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
+		
+		move_obstacle(1); // 1 means moving RIGHT
 	}
 
 	//Jump and gravity
@@ -278,18 +300,10 @@ int main() {
 
 	landing_page_background_image = iLoadImage("background_image.png");
 	button_image = iLoadImage("button_image.png");
-	play_screen_background_image = iLoadImage("image (2).png");
+	play_screen_background_image = iLoadImage("image (1).png");
 	ball_image = iLoadImage(ball_images[0]);
-
+	obstacle_image_4 = iLoadImage("obstacle_image_4.png");
 	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
 	iStart();
 	return 0;
 }
-
-/*
-	Questions:
-		- how to generate "Heat box" ( "iTimer()" > "rotate_angle = 0" )
-		- Code run korle "ERROR line" dekhay keno ?
-		- "Space" press korle "d" bondho hoye jay keno?
-
-*/
