@@ -18,6 +18,7 @@ int vw = 10;
 		"ball_image_8.png",
 	};
 	int obstacle_image_4;
+	int spike_image;
 
 // Toggle buttons
 	int play_button_enlarge = 0;
@@ -30,12 +31,17 @@ int vw = 10;
 	int credits_button_clicked = 0;
 	int quit_button_clicked = 0;
 
+	int level_failed = 0;
+
 // Positions
 	double x_of_play_screen_background = 0;
-	double ball_x = 20 * vw;	//start X
+	double	ball_x = 20 * vw;	//start X
 	double ball_y = 23 * vh;	//start Y
 	double rotating_angle = 0;
 	double OBSTACLE_X = 100;
+	double OBSTACLE_Y = 50;
+	double SPIKE_X = 100;
+
 
 //Movement Flags
 	bool isDPressed = false ;
@@ -57,7 +63,7 @@ int vw = 10;
 	const double GRAVITY = -0.5;         // pixels/tick²
 	const double JUMP_SPEED = 16.0;         // initial jump velocity
 	//const double MOVE_SPEED = 2.0;          // horizontal speed
-	const double GROUND_Y = 23 * vh;      // your floor level
+	double GROUND_Y = 23 * vh;      // your floor level [GROUND_Y cannot be const]
 
 
 void enlarge_play()
@@ -85,15 +91,94 @@ void enlarge_quit()
 	iText(47.5 * vw, 25 * vh, "QUIT", GLUT_BITMAP_HELVETICA_18);
 }
 
+
+
+void make_obstacles(){
+	iShowImage(OBSTACLE_X*vw, OBSTACLE_Y * vh, 20 * vw, 20 * vh, obstacle_image_4);
+	iShowImage(SPIKE_X*vw, 24 * vh, 20 * vw, 15 * vh, spike_image);
+}
+
+void change_y_of_obstacle(){
+	OBSTACLE_Y = rand() % 21 + 40;
+}
+
 void move_obstacle(int moving_direction) { // moving_direction = 1 (moving RIGHT) moving_direction = -1 (moving LEFT)
 	if (OBSTACLE_X <= -20) {
 		OBSTACLE_X = 110; 
+		change_y_of_obstacle();
 	}
 	else if (OBSTACLE_X >= 110) {
 		OBSTACLE_X = -20; 
+		change_y_of_obstacle();
 	}
 	OBSTACLE_X += (moving_direction)* 1;
+
+ 
 }
+
+void move_spikes(int moving_direction) { // moving_direction = 1 (moving RIGHT) moving_direction = -1 (moving LEFT)
+	if (SPIKE_X <= -20) {
+		SPIKE_X = 110;
+	}
+	else if (SPIKE_X >= 110) {
+		SPIKE_X = -20;
+	}
+	SPIKE_X += (moving_direction)* 1;
+
+
+}
+
+void jump_on_obstacle(){
+	if (OBSTACLE_X >= 5 && OBSTACLE_X <= 25) GROUND_Y = (OBSTACLE_Y+8) * vh;
+	else GROUND_Y = 23 * vh;
+
+}
+
+void show_level_failed_screen(){
+	iShowImage(0,0,100*vw,100*vh,play_screen_background_image);
+	iSetColor(255, 0, 0);
+	iText(42.5 * vw, 55 * vh, "LEVEL FAILED", GLUT_BITMAP_HELVETICA_18);
+
+}
+
+void ball_hit_spike(){
+	if ((SPIKE_X >= 5 && SPIKE_X <= 25) && ball_y == 23 * vh) {
+		level_failed = 1;
+	}
+}
+
+
+
+
+
+
+
+void show_play_screen() {
+	levels_button_clicked = 0;
+	credits_button_clicked = 0;
+	quit_button_clicked = 0;
+
+	//background tiles
+	for (int i = 0; i < 5; i++) {
+		iShowImage((int)(x_of_play_screen_background + i * 100) * vw, 0, 100 * vw, 100 * vh, play_screen_background_image);
+	}
+
+	// Eda obstacle
+	make_obstacles();
+
+
+
+	//	iShowImage(50*vw, 50 * vh, 20 * vw, 20 * vh, obstacle_image_4);
+
+	//draw and rotate ball sprite
+	iRotate((int)(ball_x + 12.5 * vh), (int)(ball_y + 12.5*vh), rotating_angle);
+	iShowImage((int)ball_x, (int)ball_y, 25 * vh, 25 * vh, ball_image);
+	iUnRotate();
+
+
+	if (level_failed) show_level_failed_screen();
+}
+
 void show_levels_screen() {
 	play_button_clicked = 0;
 	quit_button_clicked = 0;
@@ -131,24 +216,6 @@ void create_landing_page() {
 	if (quit_button_enlarge == 1) enlarge_quit();
 	
 	if (quit_button_clicked == 1) exit(0);
-}
-
-void show_play_screen() {
-	levels_button_clicked = 0;
-	credits_button_clicked = 0;
-	quit_button_clicked = 0;
-
-	//background tiles
-	for (int i = 0; i < 5; i++) {
-		iShowImage((int)(x_of_play_screen_background + i * 100) * vw, 0, 100 * vw, 100 * vh, play_screen_background_image);
-	}
-
-	iShowImage(OBSTACLE_X*vw,50*vh,20*vw,20*vh,obstacle_image_4);
-
-	//draw and rotate ball sprite
-	iRotate((int)(ball_x + 12.5 * vh), (int)(ball_y + 12.5*vh), rotating_angle);
-	iShowImage((int)ball_x, (int)ball_y, 25 * vh, 25 * vh, ball_image);
-	iUnRotate();
 }
 
 void iDraw() {
@@ -204,7 +271,7 @@ void iPassiveMouseMove(int mx, int my) {
 
 void iMouse(int button, int state, int mx, int my) {
 
-	// printf("%d, %d \n", mx/vw,my/vh);
+	//printf("%d, %d \n", mx/vw,my/vh);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 			play_button_clicked = 1;
@@ -250,6 +317,7 @@ void iKeyboard(unsigned char key) {
 
 void iTimer() {
 
+
 	//Horizontal movement
 	if (isDPressed) {
 		rotating_angle -= 15;
@@ -258,6 +326,8 @@ void iTimer() {
 		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
 
 		move_obstacle(-1); // -1 means moving LEFT
+		move_spikes(-1); // -1 means moving LEFT
+		ball_hit_spike();
 
 	}
 
@@ -268,10 +338,13 @@ void iTimer() {
 		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
 		
 		move_obstacle(1); // 1 means moving RIGHT
+		move_spikes(1); // 1 means moving RIGHT
+		ball_hit_spike();
 	}
 
 	//Jump and gravity
 	if (isJumping){
+
 		ball_vy += GRAVITY;
 		ball_y += ball_vy;
 		if (ball_y < GROUND_Y) {
@@ -279,7 +352,9 @@ void iTimer() {
 			isJumping = false;
 			ball_vy = 0;
 		}
+
 	}
+	jump_on_obstacle();
 	
 }
 
@@ -303,6 +378,9 @@ int main() {
 	play_screen_background_image = iLoadImage("image (1).png");
 	ball_image = iLoadImage(ball_images[0]);
 	obstacle_image_4 = iLoadImage("obstacle_image_4.png");
+	spike_image = iLoadImage("spike_image_2.png");
+
+
 	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
 	iStart();
 	return 0;
