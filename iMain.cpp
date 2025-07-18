@@ -97,11 +97,9 @@ void make_obstacles(){
 	iShowImage(OBSTACLE_X*vw, OBSTACLE_Y * vh, 20 * vw, 20 * vh, obstacle_image_4);
 	iShowImage(SPIKE_X*vw, 24 * vh, 20 * vw, 15 * vh, spike_image);
 }
-
 void change_y_of_obstacle(){
 	OBSTACLE_Y = rand() % 21 + 40;
 }
-
 void move_obstacle(int moving_direction) { // moving_direction = 1 (moving RIGHT) moving_direction = -1 (moving LEFT)
 	if (OBSTACLE_X <= -20) {
 		OBSTACLE_X = 110; 
@@ -115,7 +113,6 @@ void move_obstacle(int moving_direction) { // moving_direction = 1 (moving RIGHT
 
  
 }
-
 void move_spikes(int moving_direction) { // moving_direction = 1 (moving RIGHT) moving_direction = -1 (moving LEFT)
 	if (SPIKE_X <= -20) {
 		SPIKE_X = 110;
@@ -127,20 +124,17 @@ void move_spikes(int moving_direction) { // moving_direction = 1 (moving RIGHT) 
 
 
 }
-
 void jump_on_obstacle(){
 	if (OBSTACLE_X >= 5 && OBSTACLE_X <= 25) GROUND_Y = (OBSTACLE_Y+8) * vh;
 	else GROUND_Y = 23 * vh;
 
 }
-
 void show_level_failed_screen(){
 	iShowImage(0,0,100*vw,100*vh,play_screen_background_image);
 	iSetColor(255, 0, 0);
 	iText(42.5 * vw, 55 * vh, "LEVEL FAILED", GLUT_BITMAP_HELVETICA_18);
 
 }
-
 void ball_hit_spike(){
 	if ((SPIKE_X >= 5 && SPIKE_X <= 25) && ball_y == 23 * vh) {
 		level_failed = 1;
@@ -151,7 +145,33 @@ void ball_hit_spike(){
 
 
 
+void create_landing_page() {
+	iShowImage(0, 0, 100 * vw, 100 * vh, play_screen_background_image);
 
+	iShowImage(30 * vw, 65 * vh, 40 * vw, 40 * vh, button_image);
+	iSetColor(0, 0, 0);
+	iText(47 * vw, 85 * vh, "PLAY", GLUT_BITMAP_9_BY_15);
+
+
+	iShowImage(30 * vw, 45 * vh, 40 * vw, 40 * vh, button_image);
+	iSetColor(0, 0, 0);
+	iText(46 * vw, 65 * vh, "LEVELS");
+
+	iShowImage(30 * vw, 25 * vh, 40 * vw, 40 * vh, button_image);
+	iSetColor(0, 0, 0);
+	iText(46 * vw, 45 * vh, "CREDITS");
+
+	iShowImage(30 * vw, 5 * vh, 40 * vw, 40 * vh, button_image);
+	iSetColor(0, 0, 0);
+	iText(47.5 * vw, 25 * vh, "QUIT");
+
+	if (play_button_enlarge == 1) enlarge_play();
+	if (levels_button_enlarge == 1) enlarge_levels();
+	if (credits_button_enlarge == 1) enlarge_credits();
+	if (quit_button_enlarge == 1) enlarge_quit();
+
+	if (quit_button_clicked == 1) exit(0);
+}
 
 void show_play_screen() {
 	levels_button_clicked = 0;
@@ -190,33 +210,19 @@ void show_levels_screen() {
 	iText(0, 80 * vh, "Levels Screen", GLUT_BITMAP_HELVETICA_18);
 }
 
-void create_landing_page() {
-	iShowImage(0, 0, 100 * vw, 100 * vh, play_screen_background_image);
-
-	iShowImage(30 * vw, 65 * vh, 40 * vw, 40 * vh, button_image);
-	iSetColor(0, 0, 0);
-	iText(47 * vw, 85 * vh, "PLAY", GLUT_BITMAP_9_BY_15);
 
 
-	iShowImage(30 * vw, 45 * vh, 40 * vw, 40 * vh, button_image);
-	iSetColor(0, 0, 0);
-	iText(46 * vw, 65 * vh, "LEVELS");
 
-	iShowImage(30 * vw, 25 * vh, 40 * vw, 40 * vh, button_image);
-	iSetColor(0, 0, 0);
-	iText(46 * vw, 45 * vh, "CREDITS");
 
-	iShowImage(30 * vw, 5 * vh, 40 * vw, 40 * vh, button_image);
-	iSetColor(0, 0, 0);
-	iText(47.5 * vw, 25 * vh, "QUIT");
 
-	if (play_button_enlarge == 1) enlarge_play();
-	if (levels_button_enlarge == 1) enlarge_levels();
-	if (credits_button_enlarge == 1) enlarge_credits();
-	if (quit_button_enlarge == 1) enlarge_quit();
-	
-	if (quit_button_clicked == 1) exit(0);
-}
+
+
+
+
+
+
+
+
 
 void iDraw() {
 	iClear();
