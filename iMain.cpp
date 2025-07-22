@@ -13,9 +13,9 @@ int vw = 10;
 	int ball_image;
 	int play_screen_background_image;
 	char ball_images[3][100] = { 
+		"ball_image_8.png", 
 		"ball_image_10.png", 
-		"ball_image_2.png", 
-		"ball_image_8.png",
+		"ball_image_2.png",
 	};
 	int obstacle_image_4;
 	int spike_image;
@@ -61,9 +61,9 @@ int vw = 10;
 
 // --- Physics constants ---
 	const double GRAVITY = -0.5;         // pixels/tick²
-	const double JUMP_SPEED = 16.0;         // initial jump velocity
+	const double JUMP_SPEED = 12.0;         // initial jump velocity
 	//const double MOVE_SPEED = 2.0;          // horizontal speed
-	double GROUND_Y = 23 * vh;      // your floor level [GROUND_Y cannot be const]
+	double GROUND_Y = 27 * vh;      // your floor level [GROUND_Y cannot be const]
 
 
 void enlarge_play()
@@ -125,8 +125,8 @@ void move_spikes(int moving_direction) { // moving_direction = 1 (moving RIGHT) 
 
 }
 void jump_on_obstacle(){
-	if (OBSTACLE_X >= 5 && OBSTACLE_X <= 25) GROUND_Y = (OBSTACLE_Y+8) * vh;
-	else GROUND_Y = 23 * vh;
+	if (OBSTACLE_X >= 5 && OBSTACLE_X <= 25) GROUND_Y = (OBSTACLE_Y+12) * vh;
+	else GROUND_Y = 27 * vh;
 
 }
 void show_level_failed_screen(){
@@ -224,9 +224,13 @@ void show_levels_screen() {
 
 
 
-void iDraw() {
-	iClear();
 
+
+
+void iDraw()
+{
+	iClear();
+	
 	if (play_button_clicked) {
 		show_play_screen();        // <-- now draws & rotates your bouncing ball
 	}
@@ -236,13 +240,16 @@ void iDraw() {
 	else {
 		create_landing_page();
 	}
+
 }
 
-void iMouseMove(int mx, int my) {
-	// Not used in this example
+void iMouseMove(int mx, int my)
+{
+	
 }
 
-void iPassiveMouseMove(int mx, int my) {
+void iPassiveMouseMove(int mx, int my)
+{
 	if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 		play_button_enlarge = 1;
 	}
@@ -275,8 +282,8 @@ void iPassiveMouseMove(int mx, int my) {
 	}
 }
 
-void iMouse(int button, int state, int mx, int my) {
-
+void iMouse(int button, int state, int mx, int my)
+{
 	//printf("%d, %d \n", mx/vw,my/vh);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
@@ -298,29 +305,73 @@ void iMouse(int button, int state, int mx, int my) {
 	}
 }
 
-void iKeyboard(unsigned char key) {
-	if (key == 'd') isDPressed = true;
-	else isDPressed = false;
-	
-	if (key == 'a') isAPressed = true;
-	else isAPressed = false;
-	
-	if (key == ' ') {
-        // only allow a new jump if you’re on (or very near) the ground
-        if (!isJumping) {
-			isJumping = true;
-            ball_vy = JUMP_SPEED;
-        }
-    }
-	if (key == 'c') {
-		ball_img_index = (ball_img_index + 1) % 3;
-		ball_image = iLoadImage(ball_images[ball_img_index]);
+// Special Keys:
+// GLUT_KEY_F1, GLUT_KEY_F2, GLUT_KEY_F3, GLUT_KEY_F4, GLUT_KEY_F5, GLUT_KEY_F6, GLUT_KEY_F7, GLUT_KEY_F8, GLUT_KEY_F9, GLUT_KEY_F10, GLUT_KEY_F11, GLUT_KEY_F12, 
+// GLUT_KEY_LEFT, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_DOWN, GLUT_KEY_PAGE UP, GLUT_KEY_PAGE DOWN, GLUT_KEY_HOME, GLUT_KEY_END, GLUT_KEY_INSERT
+
+void fixedUpdate()
+{
+	if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP))
+	{
+
+	}
+	if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT))
+	{
+		rotating_angle += 15;
+
+		x_of_play_screen_background += 1;
+		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
+		
+		move_obstacle(1); // 1 means moving RIGHT
+		move_spikes(1); // 1 means moving RIGHT
+		ball_hit_spike();
+	}
+	if (isKeyPressed('s') || isSpecialKeyPressed(GLUT_KEY_DOWN))
+	{
+	}
+	if (isKeyPressed('d') || isSpecialKeyPressed(GLUT_KEY_RIGHT))
+	{
+		rotating_angle -= 15;
+
+		x_of_play_screen_background -= 1;
+		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
+
+		move_obstacle(-1); // -1 means moving LEFT
+		move_spikes(-1); // -1 means moving LEFT
+		ball_hit_spike();
+	}
+
+	if (isKeyPressed(' ')) {
+		
+		isJumping = true;
+		jump_on_obstacle();
+
+
+        ball_vy = JUMP_SPEED;
+		ball_vy += GRAVITY;
+		ball_y += ball_vy;
+
+
+		// Playing the audio once
+	}	
+
+	if (!isKeyPressed(' ')) {
+		ball_hit_spike();
+		jump_on_obstacle();
+		//isJumping = true;
+		ball_vy += GRAVITY;
+		ball_y += ball_vy;		
+		if (ball_y < GROUND_Y) {
+			ball_y = GROUND_Y;
+			//isJumping = false;
+			ball_vy = 0;
+		}
+
+		// Playing the audio once
 	}
 }
 
-
-
-
+/*
 void iTimer() {
 
 
@@ -364,19 +415,24 @@ void iTimer() {
 	
 }
 
-void iSpecialKeyboard(unsigned char key) {
-	if (key == GLUT_KEY_RIGHT) {
-		// Not used in this example
-	}
-	if (key == GLUT_KEY_LEFT) {
-		// Not used in this example
-	}
-	if (key == GLUT_KEY_HOME) {
-		// Not used in this example
-	}
-}
+*/
 
-int main() {
+int main()
+{
+	// Opening/Loading the audio files
+	mciSendString("open \"Audios//background.mp3\" alias bgsong", NULL, 0, NULL);
+	mciSendString("open \"Audios//gameover.mp3\" alias ggsong", NULL, 0, NULL);
+
+	// Playing the background audio on repeat
+	mciSendString("play bgsong repeat", NULL, 0, NULL);
+
+	// If the use of an audio is finished, close it to free memory
+	// mciSendString("close bgsong", NULL, 0, NULL);
+	// mciSendString("close ggsong", NULL, 0, NULL);
+	
+	
+	
+	
 	iInitialize(100 * vw, 100 * vh, "Project Title");
 
 	landing_page_background_image = iLoadImage("background_image.png");
@@ -387,7 +443,7 @@ int main() {
 	spike_image = iLoadImage("spike_image_2.png");
 
 
-	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
+	//iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
 	iStart();
 	return 0;
 }
