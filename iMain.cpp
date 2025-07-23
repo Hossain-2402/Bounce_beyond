@@ -139,7 +139,7 @@ void fixedUpdate()
 
 	if (!isKeyPressed(' ')) {
 		ball_hit_spike();
-		//jump_on_obstacle();
+		jump_on_obstacle();
 		//isJumping = true;
 		ball_vy += GRAVITY;
 		ball_y += ball_vy;
