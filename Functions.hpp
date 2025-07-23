@@ -74,7 +74,7 @@
 	void ball_hit_spike(){
 		if ((SPIKE_X >= -15 && SPIKE_X <= 25) && ball_y == 27 * vh) {
 
-			//level_failed = 1;
+			level_failed = 1;
 		}
 	}
 
