@@ -61,7 +61,7 @@
 
 	}
 	void jump_on_obstacle(){
-		if (OBSTACLE_X >= 5 && OBSTACLE_X <= 25) GROUND_Y = (OBSTACLE_Y + 12) * vh;
+		if ((OBSTACLE_X >= 4 && OBSTACLE_X <= 25) && ball_y > 27*vh) GROUND_Y = (OBSTACLE_Y + 12) * vh;
 		else GROUND_Y = 27 * vh;
 
 	}
@@ -72,7 +72,7 @@
 
 	}
 	void ball_hit_spike(){
-		if ((SPIKE_X >= -15 && SPIKE_X <= 25)) {
+		if ((SPIKE_X >= -15 && SPIKE_X <= 25) && ball_y == 27 * vh) {
 
 			//level_failed = 1;
 		}
