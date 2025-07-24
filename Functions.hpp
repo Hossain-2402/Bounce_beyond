@@ -1,5 +1,7 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
+#include "Variables.hpp"
+
 
 
 	void enlarge_play()
