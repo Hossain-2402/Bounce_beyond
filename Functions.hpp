@@ -74,7 +74,8 @@
 	void ball_hit_spike(){
 		if ((SPIKE_X >= -15 && SPIKE_X <= 25) && ball_y == 27 * vh) {
 
-			level_failed = 1;
+			show_blast = true;
+			blast_timer = 0;
 		}
 	}
 
@@ -127,11 +128,23 @@
 
 		//	iShowImage(50*vw, 50 * vh, 20 * vw, 20 * vh, obstacle_image_4);
 
-		//draw and rotate ball sprite
-		iRotate((int)(ball_x + 12.5 * vh), (int)(ball_y + 12.5*vh), rotating_angle);
-		iShowImage((int)ball_x, (int)ball_y, 25 * vh, 25 * vh, ball_image);
-		iUnRotate();
+		
 
+
+		//blast before level failed
+		if (show_blast && (blast_timer < blast_duration)) {
+			iShowImage((int)ball_x , (int)ball_y, 25 * vh, 25 * vh, blast_image);
+		}
+		else if (show_blast && blast_timer >= blast_duration) {
+			level_failed = 1;
+			show_blast = false; // prevent looping
+		}
+		else{
+			//draw and rotate ball sprite
+			iRotate((int)(ball_x + 12.5 * vh), (int)(ball_y + 12.5*vh), rotating_angle);
+			iShowImage((int)ball_x, (int)ball_y, 25 * vh, 25 * vh, ball_image);
+			iUnRotate();
+		}
 
 		if (level_failed) show_level_failed_screen();
 	}
