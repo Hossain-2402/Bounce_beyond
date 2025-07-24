@@ -12,6 +12,7 @@
 
 	// Images
 	int landing_page_background_image;
+	int blast_image;
 	int button_image;
 	int ball_image;
 	int play_screen_background_image;
@@ -41,7 +42,7 @@
 
 	// Positions
 	double x_of_play_screen_background = 0;
-	double	ball_x = 20 * vw;	//start X
+	double ball_x = 20 * vw;	//start X
 	double ball_y = 23 * vh;	//start Y
 	double rotating_angle = 0;
 	double OBSTACLE_X = 100;
@@ -61,17 +62,22 @@
 	double current_rotation_angle;
 	int ball_img_index = 0;
 
-	// --- New physics state ---
+	//physics state
 	double ball_vx = 0.0;
 	double ball_vy = 0.0;
 
-	// --- Physics constants ---
-	const double GRAVITY = -0.5;         // pixels/tick²
+	//Physics constants
+	const double GRAVITY = -0.5;         // pixels/frame
 	const double JUMP_SPEED = 12.0;         // initial jump velocity
 	//const double MOVE_SPEED = 2.0;          // horizontal speed
 	double GROUND_Y = 27 * vh;      // your floor level [GROUND_Y cannot be const]
 
+	//blast
+	bool show_blast = false;
+	int blast_timer = 0;
+	const int blast_duration = 10;
 
 
 
-#endif
+
+#end
