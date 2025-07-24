@@ -1,3 +1,4 @@
+
 #include "iGraphics.h"
 #include <cmath>
 #include <cstring>
@@ -66,7 +67,7 @@ void iPassiveMouseMove(int mx, int my)
 
 void iMouse(int button, int state, int mx, int my)
 {
-//	printf("%d -> %d\n", mx / vw, my / vh);
+	//	printf("%d -> %d\n", mx / vw, my / vh);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 			play_button_clicked = 1;
@@ -93,6 +94,8 @@ void iMouse(int button, int state, int mx, int my)
 
 void fixedUpdate()
 {
+	if (show_blast) return; //stop everything if level failed
+
 	if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP))
 	{
 
@@ -153,10 +156,15 @@ void fixedUpdate()
 	}
 }
 
+
+void iTimer(){
+
+	if (show_blast){
+		blast_timer++;
+	}
+
+
 /*
-void iTimer() {
-
-
 //Horizontal movement
 if (isDPressed) {
 rotating_angle -= 15;
@@ -194,10 +202,12 @@ ball_vy = 0;
 
 }
 jump_on_obstacle();
+*/
 
 }
 
-*/
+
+
 
 int main()
 {
@@ -223,9 +233,10 @@ int main()
 	ball_image = iLoadImage(ball_images[0]);
 	obstacle_image_4 = iLoadImage("obstacle_image_4.png");
 	spike_image = iLoadImage("spike_image_2.png");
+	blast_image = iLoadImage("blast_image(1).png");
 
 
-	//iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
+	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
 	iStart();
 	return 0;
 }
