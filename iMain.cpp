@@ -1,4 +1,3 @@
-
 #include "iGraphics.h"
 #include <cmath>
 #include <cstring>
@@ -67,7 +66,7 @@ void iPassiveMouseMove(int mx, int my)
 
 void iMouse(int button, int state, int mx, int my)
 {
-	//	printf("%d -> %d\n", mx / vw, my / vh);
+		//printf("%d -> %d\n", mx / vh, my / vh);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 			play_button_clicked = 1;
@@ -96,34 +95,15 @@ void fixedUpdate()
 {
 	if (show_blast) return; //stop everything if level failed
 
-	if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP))
-	{
 
-	}
 	if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT))
 	{
-		rotating_angle += 15;
-
-		x_of_play_screen_background += 1;
-		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
-
-		move_obstacle(1); // 1 means moving RIGHT
-		move_spikes(1); // 1 means moving RIGHT
-		ball_hit_spike();
+		move_ball_backwards();
 	}
-	if (isKeyPressed('s') || isSpecialKeyPressed(GLUT_KEY_DOWN))
-	{
-	}
+
 	if (isKeyPressed('d') || isSpecialKeyPressed(GLUT_KEY_RIGHT))
 	{
-		rotating_angle -= 15;
-
-		x_of_play_screen_background -= 1;
-		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
-
-		move_obstacle(-1); // -1 means moving LEFT
-		move_spikes(-1); // -1 means moving LEFT
-		ball_hit_spike();
+		move_ball_forwards();
 	}
 
 	if (isKeyPressed(' ')) {
@@ -137,7 +117,6 @@ void fixedUpdate()
 		ball_y += ball_vy;
 
 
-		// Playing the audio once
 	}
 
 	if (!isKeyPressed(' ')) {
@@ -152,7 +131,6 @@ void fixedUpdate()
 			ball_vy = 0;
 		}
 
-		// Playing the audio once
 	}
 }
 
@@ -164,45 +142,45 @@ void iTimer(){
 	}
 
 
-/*
-//Horizontal movement
-if (isDPressed) {
-rotating_angle -= 15;
+	/*
+	//Horizontal movement
+	if (isDPressed) {
+	rotating_angle -= 15;
 
-x_of_play_screen_background -= 1;
-if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
+	x_of_play_screen_background -= 1;
+	if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
 
-move_obstacle(-1); // -1 means moving LEFT
-move_spikes(-1); // -1 means moving LEFT
-ball_hit_spike();
+	move_obstacle(-1); // -1 means moving LEFT
+	move_spikes(-1); // -1 means moving LEFT
+	ball_hit_spike();
 
-}
+	}
 
-if (isAPressed) {
-rotating_angle += 15;
+	if (isAPressed) {
+	rotating_angle += 15;
 
-x_of_play_screen_background += 1;
-if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
+	x_of_play_screen_background += 1;
+	if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
 
-move_obstacle(1); // 1 means moving RIGHT
-move_spikes(1); // 1 means moving RIGHT
-ball_hit_spike();
-}
+	move_obstacle(1); // 1 means moving RIGHT
+	move_spikes(1); // 1 means moving RIGHT
+	ball_hit_spike();
+	}
 
-//Jump and gravity
-if (isJumping){
+	//Jump and gravity
+	if (isJumping){
 
-ball_vy += GRAVITY;
-ball_y += ball_vy;
-if (ball_y < GROUND_Y) {
-ball_y = GROUND_Y;
-isJumping = false;
-ball_vy = 0;
-}
+	ball_vy += GRAVITY;
+	ball_y += ball_vy;
+	if (ball_y < GROUND_Y) {
+	ball_y = GROUND_Y;
+	isJumping = false;
+	ball_vy = 0;
+	}
 
-}
-jump_on_obstacle();
-*/
+	}
+	jump_on_obstacle();
+	*/
 
 }
 
@@ -227,6 +205,7 @@ int main()
 
 	iInitialize(100 * vw, 100 * vh, "Project Title");
 
+	// Generating Images
 	landing_page_background_image = iLoadImage("background_image.png");
 	button_image = iLoadImage("button_image.png");
 	play_screen_background_image = iLoadImage("image (1).png");
@@ -234,9 +213,14 @@ int main()
 	obstacle_image_4 = iLoadImage("obstacle_image_4.png");
 	spike_image = iLoadImage("spike_image_2.png");
 	blast_image = iLoadImage("blast_image(1).png");
+	for (int i = 0; i < 50; i++){
+		coins[i].coin_image = iLoadImage("coin_image_1.png");
+	}
 
 
 	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
+	// Keep oscillating the spike 
+	iSetTimer(150, change_y_of_obstacle);
 	iStart();
 	return 0;
 }
