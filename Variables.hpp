@@ -23,7 +23,12 @@
 	};
 	int obstacle_image_4;
 	int spike_image;
-
+	
+	struct Coins{
+		int coin_image; // coin top-bottom-left-right padding : 2*vh
+		int height = 8;
+		int width = 8;
+	}coins[50];
 
 
 
@@ -42,12 +47,14 @@
 
 	// Positions
 	double x_of_play_screen_background = 0;
+	double x_of_coin = 5;
 	double ball_x = 20 * vw;	//start X
 	double ball_y = 23 * vh;	//start Y
 	double rotating_angle = 0;
 	double OBSTACLE_X = 100;
 	double OBSTACLE_Y = 50;
 	double SPIKE_X = 90;
+	double GROUND_Y = 28 * vh;      // your floor level [GROUND_Y cannot be const]
 
 
 	//Movement Flags
@@ -70,14 +77,15 @@
 	const double GRAVITY = -0.5;         // pixels/frame
 	const double JUMP_SPEED = 12.0;         // initial jump velocity
 	//const double MOVE_SPEED = 2.0;          // horizontal speed
-	double GROUND_Y = 27 * vh;      // your floor level [GROUND_Y cannot be const]
 
 	//blast
 	bool show_blast = false;
 	int blast_timer = 0;
 	const int blast_duration = 10;
 
+	int counter = 0;
 
 
 
-#end
+
+#endif
