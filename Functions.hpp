@@ -111,7 +111,7 @@
 
 	}
 	void ball_hit_spike(){
-		if ((SPIKE_X >= -15 && SPIKE_X <= 20) && ball_y == 27 * vh) {
+		if ((SPIKE_X >= -15 && SPIKE_X <= 20) && ball_y == 28 * vh) {
 
 			show_blast = true;
 			blast_timer = 0;
