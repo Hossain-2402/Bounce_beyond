@@ -65,6 +65,8 @@
 			iShowImage(x*vw, y*vh, coins[i].width * vh, coins[i].height * vh, coins[i].coin_image);
 		}
 	}
+
+	// moving things
 	void move_obstacle(int moving_direction) { // moving_direction = 1 (moving RIGHT) moving_direction = -1 (moving LEFT)
 		if (OBSTACLE_X <= -20) {
 			OBSTACLE_X = 110;
@@ -141,6 +143,29 @@
 		move_obstacle(-1); // -1 means moving LEFT
 		move_spikes(-1); // -1 means moving LEFT
 		ball_hit_spike();
+	}
+
+	// ball jump up/down
+	void jump_up(){
+		isJumping = true;
+		jump_on_obstacle();
+
+
+		ball_vy = JUMP_SPEED;
+		ball_vy += GRAVITY;
+		ball_y += ball_vy;
+	}
+	void jump_down(){
+		ball_hit_spike();
+		jump_on_obstacle();
+		//isJumping = true;
+		ball_vy += GRAVITY;
+		ball_y += ball_vy;
+		if (ball_y < GROUND_Y) {
+			ball_y = GROUND_Y;
+			//isJumping = false;
+			ball_vy = 0;
+		}
 	}
 
 
