@@ -98,38 +98,27 @@ void fixedUpdate()
 
 	if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT))
 	{
+	
 		move_ball_backwards();
+	
 	}
 
 	if (isKeyPressed('d') || isSpecialKeyPressed(GLUT_KEY_RIGHT))
 	{
+
 		move_ball_forwards();
+	
 	}
 
 	if (isKeyPressed(' ')) {
 
-		isJumping = true;
-		jump_on_obstacle();
-
-
-		ball_vy = JUMP_SPEED;
-		ball_vy += GRAVITY;
-		ball_y += ball_vy;
-
+		jump_up();
 
 	}
 
 	if (!isKeyPressed(' ')) {
-		ball_hit_spike();
-		jump_on_obstacle();
-		//isJumping = true;
-		ball_vy += GRAVITY;
-		ball_y += ball_vy;
-		if (ball_y < GROUND_Y) {
-			ball_y = GROUND_Y;
-			//isJumping = false;
-			ball_vy = 0;
-		}
+
+		jump_down();
 
 	}
 }
