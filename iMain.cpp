@@ -66,13 +66,75 @@ void iPassiveMouseMove(int mx, int my)
 
 void iMouse(int button, int state, int mx, int my)
 {
-		//printf("%d -> %d\n", mx / vh, my / vh);
+	//printf("%d -> %d\n", mx / vh, my / vh);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 			play_button_clicked = 1;
 		}
 		if ((mx >= 2.5 * vh && mx <= 12.5 * vh) && (my >= 87.5 * vh && my <= 97.5 * vh)) {
 			play_button_clicked = 0;
+			
+			//reset variables
+			score = 0;
+			level_failed = 0;
+			show_blast = false;
+			blast_timer = 0;
+
+			//reset ball position
+			ball_x = 20 * vw;
+			ball_y = 23 * vh;
+
+			//reset movement and physics
+			ball_vx = 0;
+			ball_vy = 0;
+			rotating_angle = 0;
+			GROUND_Y = 28 * vh;
+
+			//reset background scroll
+			x_of_play_screen_background = 0;
+			x_of_coin = 5;
+
+			//reset obstacle & spike positions
+			OBSTACLE_X = 100;
+			OBSTACLE_Y = 50;
+			SPIKE_X = 90;
+
+			for (int i = 0; i < 50; i++){
+				coins[i].collected = false;
+			}
+			
+		}
+		if ((mx >= 46.3 * vw && mx <= 51.3 * vw) && (my >= 35 * vh && my <= 45 * vh)){
+			play_button_clicked = 0;
+
+			//reset variables
+			score = 0;
+			level_failed = 0;
+			show_blast = false;
+			blast_timer = 0;
+
+			//reset ball position
+			ball_x = 20 * vw;
+			ball_y = 23 * vh;
+
+			//reset movement and physics
+			ball_vx = 0;
+			ball_vy = 0;
+			rotating_angle = 0;
+			GROUND_Y = 28 * vh;
+
+			//reset background scroll
+			x_of_play_screen_background = 0;
+			x_of_coin = 5;
+
+			//reset obstacle & spike positions
+			OBSTACLE_X = 100;
+			OBSTACLE_Y = 50;
+			SPIKE_X = 90;
+
+			for (int i = 0; i < 50; i++){
+				coins[i].collected = false;
+			}
 		}
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 60 * vh && my <= 70 * vh)) {
 			levels_button_clicked = 1;
@@ -101,16 +163,16 @@ void fixedUpdate()
 
 	if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT))
 	{
-	
+
 		move_ball_backwards();
-	
+
 	}
 
 	if (isKeyPressed('d') || isSpecialKeyPressed(GLUT_KEY_RIGHT))
 	{
 
 		move_ball_forwards();
-	
+
 	}
 
 	if (isKeyPressed(' ')) {
@@ -209,6 +271,7 @@ int main()
 	for (int i = 0; i < 50; i++){
 		coins[i].coin_image = iLoadImage("coin_image_1.png");
 	}
+	restart_image = iLoadImage("restart_button.png");
 
 
 	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
