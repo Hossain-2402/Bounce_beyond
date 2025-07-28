@@ -74,6 +74,9 @@ void iMouse(int button, int state, int mx, int my)
 		if ((mx >= 2.5 * vh && mx <= 12.5 * vh) && (my >= 87.5 * vh && my <= 97.5 * vh)) {
 			play_button_clicked = 0;
 		}
+		if ((mx >= 46.5 * vw && mx <= 51.5 * vw) && (my >= 40 * vh && my <= 50 * vh)) {
+			play_button_clicked = 0;
+		}
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 60 * vh && my <= 70 * vh)) {
 			levels_button_clicked = 1;
 		}
@@ -201,6 +204,7 @@ int main()
 	landing_page_background_image = iLoadImage("background_image.png");
 	button_image = iLoadImage("button_image.png");
 	back_image = iLoadImage("back_button_2.png");
+	restart_image = iLoadImage("restart_button.png");
 	play_screen_background_image = iLoadImage("image (1).png");
 	ball_image = iLoadImage(ball_images[0]);
 	obstacle_image_4 = iLoadImage("obstacle_image_4.png");
