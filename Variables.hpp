@@ -23,6 +23,7 @@
 	};
 	int obstacle_image_4;
 	int spike_image;
+	int back_image;
 	
 	struct Coins{
 		int coin_image; // coin top-bottom-left-right padding : 2*vh
