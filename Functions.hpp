@@ -211,6 +211,8 @@
 
 		make_ball();
 
+		iShowImage(2.5*vh, 87.5*vh, 10 * vh, 10 * vh, back_image);
+
 		if (level_failed) show_level_failed_screen();
 	}
 	void show_levels_screen() {
