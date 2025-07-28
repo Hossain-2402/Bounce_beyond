@@ -110,6 +110,7 @@
 		iShowImage(0, 0, 100 * vw, 100 * vh, play_screen_background_image);
 		iSetColor(255, 0, 0);
 		iText(42.5 * vw, 55 * vh, "LEVEL FAILED", GLUT_BITMAP_HELVETICA_18);
+		iShowImage(46.5 * vw, 40 * vh, 5 * vw, 10 * vh, restart_image);
 
 	}
 	void ball_hit_spike(){
