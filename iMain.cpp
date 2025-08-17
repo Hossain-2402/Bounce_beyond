@@ -62,6 +62,9 @@ void iPassiveMouseMove(int mx, int my)
 	else{
 		quit_button_enlarge = 0;
 	}
+
+	mouseX = mx;
+	mouseY = my;
 }
 
 void iMouse(int button, int state, int mx, int my)
@@ -73,7 +76,7 @@ void iMouse(int button, int state, int mx, int my)
 		}
 		if ((mx >= 2.5 * vh && mx <= 12.5 * vh) && (my >= 87.5 * vh && my <= 97.5 * vh)) {
 			play_button_clicked = 0;
-			
+
 			//reset variables
 			score = 0;
 			level_failed = 0;
@@ -102,7 +105,7 @@ void iMouse(int button, int state, int mx, int my)
 			for (int i = 0; i < 50; i++){
 				coins[i].collected = false;
 			}
-			
+
 		}
 		if ((mx >= 46.3 * vw && mx <= 51.3 * vw) && (my >= 35 * vh && my <= 45 * vh)){
 			play_button_clicked = 0;
@@ -147,6 +150,32 @@ void iMouse(int button, int state, int mx, int my)
 			quit_button_clicked = 1;
 		}
 	}
+
+	if (projectileMode && button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
+		isDragging = true;
+		drag_start_x = mx;
+		drag_start_y = my;
+	}
+	else if (projectileMode && button == GLUT_LEFT_BUTTON && state == GLUT_UP && isDragging){
+		isDragging = false;
+		launched = true;
+
+		drag_end_x = mx;
+		drag_end_y = my;
+
+		//velocity calculator
+		double vdx = drag_start_x - drag_end_x;
+		double vdy = drag_start_y - drag_end_y;
+
+		//extra power
+		double power = 0.2;
+		projectile_vx = vdx * power;
+		projectile_vy = vdy * power;
+
+		projectileMode = false;
+	}
+
+
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
 		// Not used in this example
 	}
@@ -164,15 +193,16 @@ void fixedUpdate()
 	if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT))
 	{
 
-		move_ball_backwards();
+		if (play_button_clicked) move_ball_backwards();
+		if (levels_button_clicked) move_screen_backwards();
 
 	}
 
 	if (isKeyPressed('d') || isSpecialKeyPressed(GLUT_KEY_RIGHT))
 	{
 
-		move_ball_forwards();
-
+		if (play_button_clicked) move_ball_forwards();
+		if (levels_button_clicked) move_screen_forwards();
 	}
 
 	if (isKeyPressed(' ')) {
@@ -186,6 +216,17 @@ void fixedUpdate()
 		jump_down();
 
 	}
+
+	if (isKeyPressed('p')){
+		isDragging = false;
+		launched = false;
+
+		projectileMode = true;
+
+		//stop where you are
+		ball_vx = 0;
+		ball_vy = 0;
+	}
 }
 
 
@@ -195,6 +236,20 @@ void iTimer(){
 		blast_timer++;
 	}
 
+	if (launched){
+		projectile_vy += GRAVITY;
+		ball_x += projectile_vx;
+		ball_y += projectile_vy;
+
+		adjustWorldDuringProjectile();
+
+		if (ball_y <= GROUND_Y) {
+			ball_y = GROUND_Y;
+			projectileMode = false; // Stop motion
+			projectile_vx = 0;
+			projectile_vy = 0;
+		}
+	}
 
 	/*
 	//Horizontal movement
@@ -272,6 +327,12 @@ int main()
 		coins[i].coin_image = iLoadImage("coin_image_1.png");
 	}
 	restart_image = iLoadImage("restart_button.png");
+
+	ground_image = iLoadImage("map.jpg");
+	platform_image = iLoadImage("Ground.png");
+	drop_ground_image = iLoadImage("drop.png");
+
+	inclined_ramp = iLoadImage("inclined_ramp.png");
 
 
 	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
