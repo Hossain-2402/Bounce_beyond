@@ -167,6 +167,16 @@ void move_ball_forwards(){
 	ball_hit_spike();
 }
 
+void move_screen_backwards(){
+	if (camera_x < 0) camera_x++;
+	else camera_x = 0;
+}
+void move_screen_forwards(){
+	if (camera_x >-1500 ) camera_x--;
+	else camera_x = camera_x;
+}
+
+
 // ball jump up/down
 void jump_up(){
 	isJumping = true;
@@ -192,6 +202,26 @@ void jump_down(){
 
 
 // making pages 
+
+
+
+
+void make_map(){
+
+
+	iShowImage(camera_x*vw, 0, 100 * vw, 60 * vh, platform_image);
+	iShowImage((100 + camera_x)*vw, 0, 100 * vw, 60 * vh, platform_image);
+	iShowImage((250 + camera_x)*vw, 0, 30 * vw, 60 * vh, drop_ground_image);
+
+	iShowImage((401 + camera_x)*vw, 6 * vh, 20 * vw, 60 * vh, inclined_ramp);
+	iShowImage((320 + camera_x)*vw, 0, 100 * vw, 60 * vh, platform_image);
+
+	iShowImage((419 + camera_x)*vw,32.5*vh, 5s0 * vw, 60 * vh, platform_image);
+
+}
+
+
+
 void create_landing_page() {
 	iShowImage(0, 0, 100 * vw, 100 * vh, play_screen_background_image);
 
@@ -241,24 +271,65 @@ void show_play_screen() {
 
 	iShowImage(2.5*vh, 87.5*vh, 10 * vh, 10 * vh, back_image);
 
+	if (projectileMode && isDragging) {
+		iSetColor(255, 0, 0);
+		iLine(drag_start_x, drag_start_y, mouseX, mouseY);
+	}
+
 	if (level_failed) show_level_failed_screen();
 }
 void show_levels_screen() {
-	play_button_clicked = 0;
-	quit_button_clicked = 0;
 
-	iSetColor(255, 255, 255);
-	iFilledRectangle(0, 0, 100 * vw, 100 * vh);
 
-	iSetColor(0, 0, 0);
-	iText(0, 80 * vh, "Levels Screen", GLUT_BITMAP_HELVETICA_18);
+	for (int i = 0; i < 20; i++){
+
+		double left = (i * 100) + camera_x;
+		double top = ((i+1) * 100) + camera_y;
+
+		iShowImage(left*vw, camera_y*vh, 100 * vw, 100 * vh, ground_image);
+		iShowImage(0, top*vh, 100 * vw, 100 * vh, ground_image);
+	}
+
+	make_map();
+
+
 }
 
 
 
+void adjustWorldDuringProjectile() {
+	double screen_center_x = 50 * vw; // center of screen in pixels
+	double ball_screen_x = ball_x;
 
+	if (ball_screen_x > screen_center_x) {
+		// how far ahead the ball is from center
+		double diff = ball_screen_x - screen_center_x;
 
+		// Move the world left (same as pressing 'd')
+		x_of_play_screen_background -= diff / vw;
+		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
 
+		x_of_coin -= diff / vw;
+		OBSTACLE_X -= diff / vw;
+		SPIKE_X -= diff / vw;
+
+		// Keep the ball centered
+		ball_x -= diff;
+	}
+	else if (ball_screen_x < screen_center_x - 10 * vw) {
+		// Optionally scroll left if ball goes far back (like pressing 'a')
+		double diff = screen_center_x - ball_screen_x;
+
+		x_of_play_screen_background += diff / vw;
+		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
+
+		x_of_coin += diff / vw;
+		OBSTACLE_X += diff / vw;
+		SPIKE_X += diff / vw;
+
+		ball_x += diff;
+	}
+}
 
 
 
