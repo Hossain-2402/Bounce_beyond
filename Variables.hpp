@@ -25,6 +25,10 @@ int obstacle_image_4;
 int spike_image;
 int back_image;
 int restart_image;
+int ground_image;
+int platform_image; 
+int drop_ground_image; 
+int inclined_ramp;
 
 struct Coins{
 	int coin_image; // coin top-bottom-left-right padding : 2*vh
@@ -60,6 +64,9 @@ double OBSTACLE_Y = 50;
 double SPIKE_X = 90;
 double GROUND_Y = 28 * vh;      // your floor level [GROUND_Y cannot be const]
 
+double camera_x = -400;
+double camera_y = 0;
+
 
 //Movement Flags
 bool isDPressed = false;
@@ -90,6 +97,23 @@ const int blast_duration = 10;
 int counter = 0;
 
 
+//projectile
+bool projectileMode = false;
+bool isDragging = false;
+int drag_start_x;
+int drag_end_x;
+int drag_start_y;
+int drag_end_y;
+
+bool launched = false;
+double projectile_vx = 0;
+double projectile_vy = 0;
+
+//mouse tracker
+int mouseX, mouseY;
+
+
 
 
 #endif
+
