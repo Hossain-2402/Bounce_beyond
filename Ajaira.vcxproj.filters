@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GLUT32.DLL" />
+    <None Include="iGraphics files (with Updated Keyboard Functions).zip" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="iMain.cpp">
@@ -81,6 +82,12 @@
       <Filter>Source Files</Filter>
     </Image>
     <Image Include="image.png">
+      <Filter>Source Files</Filter>
+    </Image>
+    <Image Include="blast_image.png">
+      <Filter>Source Files</Filter>
+    </Image>
+    <Image Include="map.png">
       <Filter>Source Files</Filter>
     </Image>
   </ItemGroup>
