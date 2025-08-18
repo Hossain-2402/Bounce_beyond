@@ -143,28 +143,31 @@ void ball_hit_spike(){
 }
 
 
-// moving the ball forwards/backwards 
 void move_ball_backwards(){
 	rotating_angle += 15;
 
-	x_of_play_screen_background += 1;
-	x_of_coin += 1;
-	if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
+	//x_of_play_screen_background += 1;
+	//x_of_coin += 1;
+	//if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
 
-	move_obstacle(1); // 1 means moving RIGHT
-	move_spikes(1); // 1 means moving RIGHT
-	ball_hit_spike();
+	camera_x += 1;
+
+	//move_obstacle(1); // 1 means moving RIGHT
+	//move_spikes(1); // 1 means moving RIGHT
+	//ball_hit_spike();
 }
 void move_ball_forwards(){
 	rotating_angle -= 15;
 
-	x_of_play_screen_background -= 1;
-	x_of_coin -= 1;
-	if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
+	//x_of_play_screen_background -= 1;
+	//x_of_coin -= 1;
+	//if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
 
-	move_obstacle(-1); // -1 means moving LEFT
-	move_spikes(-1); // -1 means moving LEFT
-	ball_hit_spike();
+	camera_x -= 1;
+
+	//move_obstacle(-1); // -1 means moving LEFT
+	//move_spikes(-1); // -1 means moving LEFT
+	//ball_hit_spike();
 }
 
 void move_screen_backwards(){
@@ -172,7 +175,7 @@ void move_screen_backwards(){
 	else camera_x = 0;
 }
 void move_screen_forwards(){
-	if (camera_x >-1500 ) camera_x--;
+	if (camera_x >-1500) camera_x--;
 	else camera_x = camera_x;
 }
 
@@ -204,19 +207,17 @@ void jump_down(){
 // making pages 
 
 
-
-
 void make_map(){
 
 
-	iShowImage(camera_x*vw, 0, 100 * vw, 60 * vh, platform_image);
-	iShowImage((100 + camera_x)*vw, 0, 100 * vw, 60 * vh, platform_image);
-	iShowImage((250 + camera_x)*vw, 0, 30 * vw, 60 * vh, drop_ground_image);
+	iShowImage(camera_x*vw, 0, 100 * vw, 70 * vh, platform_image);
+	iShowImage((100 + camera_x)*vw, 0, 100 * vw, 70 * vh, platform_image);
+	iShowImage((250 + camera_x)*vw, 0, 30 * vw, 70 * vh, drop_ground_image);
 
 	iShowImage((401 + camera_x)*vw, 6 * vh, 20 * vw, 60 * vh, inclined_ramp);
 	iShowImage((320 + camera_x)*vw, 0, 100 * vw, 60 * vh, platform_image);
 
-	iShowImage((419 + camera_x)*vw,32.5*vh, 5s0 * vw, 60 * vh, platform_image);
+	iShowImage((419 + camera_x)*vw, 32.5*vh, 50 * vw, 60 * vh, platform_image);
 
 }
 
@@ -284,51 +285,85 @@ void show_levels_screen() {
 	for (int i = 0; i < 20; i++){
 
 		double left = (i * 100) + camera_x;
-		double top = ((i+1) * 100) + camera_y;
+		double top = ((i + 1) * 100) + camera_y;
 
 		iShowImage(left*vw, camera_y*vh, 100 * vw, 100 * vh, ground_image);
 		iShowImage(0, top*vh, 100 * vw, 100 * vh, ground_image);
 	}
 
 	make_map();
+	make_ball();
+
+	// pointer
+	iSetColor(255, 255, 255);
+	iFilledCircle(mouseX, mouseY, 2);
+
+
+	if (projectileMode && isDragging) {
+		//center of ball
+		double ball_center_x = ball_x + 7.5 * vh;
+		double ball_center_y = ball_y + 7.5 * vh;
+
+		// drag line
+		double dx = drag_start_x - mouseX;
+		double dy = drag_start_y - mouseY;
+
+		// visible guide multiplier(increase length)
+		double scale = 2.0;
+		double guide_x = ball_center_x + dx * scale;
+		double guide_y = ball_center_y + dy * scale;
+
+		// Main guide line
+		iSetColor(255, 255, 255);      
+		iLine(ball_center_x, ball_center_y, guide_x, guide_y);
+
+		// dot preview
+		int steps = 6;
+		for (int i = 1; i <= steps; i++) {
+			double px = ball_center_x + ((dx * scale) / steps) * i;
+			double py = ball_center_y + ((dy * scale) / steps) * i;
+			iFilledCircle(px, py, 3);
+		}
+	}
+
+
 
 
 }
 
 
 
+void reset_gamestate(){
+	camera_x = 0;
+	camera_y = 0;
+
+	ball_x = 10 * vw;
+	ball_y = GROUND_Y;
+
+	//x_of_play_screen_background = 0;
+	//x_of_coin = 5;
+	//OBSTACLE_X = 100;
+	//SPIKE_X = 90;
+
+	//for (int i = 0; i < 50; i++){
+	//coins[i].collected = false;
+	//}
+}
+
 void adjustWorldDuringProjectile() {
-	double screen_center_x = 50 * vw; // center of screen in pixels
-	double ball_screen_x = ball_x;
+	// ball screen lock
+	double screen_center_x = ball_x;
+	//static double last_ball_y = ball_y;
+	//double dy = ball_y - last_ball_y;
 
-	if (ball_screen_x > screen_center_x) {
-		// how far ahead the ball is from center
-		double diff = ball_screen_x - screen_center_x;
+	//camera_y += dy/vh;
 
-		// Move the world left (same as pressing 'd')
-		x_of_play_screen_background -= diff / vw;
-		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
+	// world moves left as projectile moves right
+	camera_x -= projectile_vx / vw;  // divide by vw to match world coordinates
 
-		x_of_coin -= diff / vw;
-		OBSTACLE_X -= diff / vw;
-		SPIKE_X -= diff / vw;
+	//last_ball_y = ball_y;
 
-		// Keep the ball centered
-		ball_x -= diff;
-	}
-	else if (ball_screen_x < screen_center_x - 10 * vw) {
-		// Optionally scroll left if ball goes far back (like pressing 'a')
-		double diff = screen_center_x - ball_screen_x;
 
-		x_of_play_screen_background += diff / vw;
-		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
-
-		x_of_coin += diff / vw;
-		OBSTACLE_X += diff / vw;
-		SPIKE_X += diff / vw;
-
-		ball_x += diff;
-	}
 }
 
 
