@@ -26,8 +26,8 @@ int spike_image;
 int back_image;
 int restart_image;
 int ground_image;
-int platform_image; 
-int drop_ground_image; 
+int platform_image;
+int drop_ground_image;
 int inclined_ramp;
 
 struct Coins{
@@ -64,7 +64,7 @@ double OBSTACLE_Y = 50;
 double SPIKE_X = 90;
 double GROUND_Y = 28 * vh;      // your floor level [GROUND_Y cannot be const]
 
-double camera_x = -400;
+double camera_x = 0;
 double camera_y = 0;
 
 
