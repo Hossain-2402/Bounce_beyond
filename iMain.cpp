@@ -27,7 +27,8 @@ void iDraw()
 
 void iMouseMove(int mx, int my)
 {
-
+	mouseX = mx;
+	mouseY = my;
 }
 
 void iPassiveMouseMove(int mx, int my)
@@ -76,6 +77,7 @@ void iMouse(int button, int state, int mx, int my)
 		}
 		if ((mx >= 2.5 * vh && mx <= 12.5 * vh) && (my >= 87.5 * vh && my <= 97.5 * vh)) {
 			play_button_clicked = 0;
+			reset_gamestate();
 
 			//reset variables
 			score = 0;
@@ -109,6 +111,7 @@ void iMouse(int button, int state, int mx, int my)
 		}
 		if ((mx >= 46.3 * vw && mx <= 51.3 * vw) && (my >= 35 * vh && my <= 45 * vh)){
 			play_button_clicked = 0;
+			reset_gamestate();
 
 			//reset variables
 			score = 0;
@@ -164,13 +167,13 @@ void iMouse(int button, int state, int mx, int my)
 		drag_end_y = my;
 
 		//velocity calculator
-		double vdx = drag_start_x - drag_end_x;
-		double vdy = drag_start_y - drag_end_y;
+		double dx = drag_end_x - drag_start_x;
+		double dy = drag_end_y - drag_start_y;
 
-		//extra power
 		double power = 0.2;
-		projectile_vx = vdx * power;
-		projectile_vy = vdy * power;
+		projectile_vx = -dx * power;
+		projectile_vy = -dy * power;
+
 
 		projectileMode = false;
 	}
@@ -182,8 +185,9 @@ void iMouse(int button, int state, int mx, int my)
 }
 
 // Special Keys:
-// GLUT_KEY_F1, GLUT_KEY_F2, GLUT_KEY_F3, GLUT_KEY_F4, GLUT_KEY_F5, GLUT_KEY_F6, GLUT_KEY_F7, GLUT_KEY_F8, GLUT_KEY_F9, GLUT_KEY_F10, GLUT_KEY_F11, GLUT_KEY_F12, 
+// GLUT_KEY_F1, GLUT_KEY_F2, GLUT_KEY_F3, GLUT_KEY_F4, GLUT_KEY_F5, GLUT_KEY_F6, GLUT_KEY_F7, GLUT_KEY_F8, GLUT_KEY_F9, GLUT_KEY_F10, GLUT_KEY_F11, GLUT_KEY_F12,
 // GLUT_KEY_LEFT, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_DOWN, GLUT_KEY_PAGE UP, GLUT_KEY_PAGE DOWN, GLUT_KEY_HOME, GLUT_KEY_END, GLUT_KEY_INSERT
+
 
 void fixedUpdate()
 {
@@ -194,7 +198,7 @@ void fixedUpdate()
 	{
 
 		if (play_button_clicked) move_ball_backwards();
-		if (levels_button_clicked) move_screen_backwards();
+		if (levels_button_clicked) move_screen_backwards(), move_ball_backwards();
 
 	}
 
@@ -202,7 +206,7 @@ void fixedUpdate()
 	{
 
 		if (play_button_clicked) move_ball_forwards();
-		if (levels_button_clicked) move_screen_forwards();
+		if (levels_button_clicked) move_screen_forwards(), move_ball_forwards();
 	}
 
 	if (isKeyPressed(' ')) {
@@ -229,25 +233,23 @@ void fixedUpdate()
 	}
 }
 
-
 void iTimer(){
 
-	if (show_blast){
-		blast_timer++;
-	}
-
-	if (launched){
+	if (launched) {
+		// Gravity effect
 		projectile_vy += GRAVITY;
-		ball_x += projectile_vx;
 		ball_y += projectile_vy;
 
+		// Adjust world to keep ball locked
 		adjustWorldDuringProjectile();
 
+		// Stop on ground
 		if (ball_y <= GROUND_Y) {
 			ball_y = GROUND_Y;
-			projectileMode = false; // Stop motion
+			launched = false;
 			projectile_vx = 0;
 			projectile_vy = 0;
+
 		}
 	}
 
