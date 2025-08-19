@@ -1,10 +1,11 @@
+
 #include "iGraphics.h"
 #include <cmath>
 #include <cstring>
 
 
-#include "Variables.hpp"
-#include "Functions.hpp"
+#include "Variables.h"
+#include "Functions.h"
 
 using namespace std;
 
@@ -70,7 +71,7 @@ void iPassiveMouseMove(int mx, int my)
 
 void iMouse(int button, int state, int mx, int my)
 {
-	//printf("%d -> %d\n", mx / vh, my / vh);
+	printf("%d -> %d\n", mx / vh, my / vh);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 			play_button_clicked = 1;
@@ -192,13 +193,21 @@ void iMouse(int button, int state, int mx, int my)
 void fixedUpdate()
 {
 	if (show_blast) return; //stop everything if level failed
+	if (ball_y == -50 * vh) return;
 
 
 	if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT))
 	{
 
 		if (play_button_clicked) move_ball_backwards();
-		if (levels_button_clicked) move_screen_backwards(), move_ball_backwards();
+		if (levels_button_clicked) {
+			move_screen_backwards();
+			move_ball_backwards();
+
+
+			if (left_of_inclined_ramp >= 4 && left_of_inclined_ramp <= 23 ) camera_y += 3;
+			else camera_y = camera_y;
+		}
 
 	}
 
@@ -206,7 +215,12 @@ void fixedUpdate()
 	{
 
 		if (play_button_clicked) move_ball_forwards();
-		if (levels_button_clicked) move_screen_forwards(), move_ball_forwards();
+		if (levels_button_clicked){
+			move_screen_forwards(); 
+			move_ball_forwards();
+			if (left_of_inclined_ramp >= 7 && left_of_inclined_ramp <= 25) camera_y-= 3;
+			else camera_y = camera_y;
+		}
 	}
 
 	if (isKeyPressed(' ')) {
@@ -330,7 +344,7 @@ int main()
 	}
 	restart_image = iLoadImage("restart_button.png");
 
-	ground_image = iLoadImage("map.jpg");
+	ground_image = iLoadImage("map.png");
 	platform_image = iLoadImage("Ground.png");
 	drop_ground_image = iLoadImage("drop.png");
 
