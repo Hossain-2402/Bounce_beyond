@@ -1,3 +1,4 @@
+
 #ifndef VARIABLES_H
 #define VARIABLES_H
 
@@ -66,6 +67,9 @@ double GROUND_Y = 28 * vh;      // your floor level [GROUND_Y cannot be const]
 
 double camera_x = 0;
 double camera_y = 0;
+double left_of_first_small_ground;
+double left_of_large_ground;
+double left_of_inclined_ramp;
 
 
 //Movement Flags
