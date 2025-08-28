@@ -2,7 +2,7 @@
 #define FUNCTIONS_H
 #include "Variables.h"
 
-// hover effects
+	// hover effects
 	void enlarge_play()
 	{
 		iShowImage(25 * vw, 60 * vh, 50 * vw, 50 * vh, button_image);
@@ -28,7 +28,7 @@
 		iText(47.5 * vw, 25 * vh, "QUIT", GLUT_BITMAP_HELVETICA_18);
 	}
 
-// the game screen
+	// the game screen
 	void make_background(){
 		for (int i = 0; i < 5; i++) {
 			iShowImage((x_of_play_screen_background + i * 100) * vw, 0, 100 * vw, 100 * vh, play_screen_background_image);
@@ -38,6 +38,7 @@
 		//blast before level failed
 		if (show_blast && (blast_timer < blast_duration)) {
 			iShowImage(ball_x, ball_y, 25 * vh, 25 * vh, blast_image);
+			blast_timer += 0.01;
 		}
 		else if (show_blast && blast_timer >= blast_duration) {
 			level_failed = 1;
@@ -81,7 +82,7 @@
 		}
 	}
 
-// moving things
+	// moving things
 	void move_obstacle(int moving_direction) { // moving_direction = 1 (moving RIGHT) moving_direction = -1 (moving LEFT)
 		if (OBSTACLE_X <= -20) {
 			OBSTACLE_X = 110;
@@ -105,7 +106,7 @@
 
 	}
 
-// moving actions
+	// moving actions
 	void change_y_of_obstacle(){
 		//OBSTACLE_Y = rand() % 21 + 40;
 		counter++;
@@ -151,29 +152,45 @@
 	void move_ball_backwards(){
 		rotating_angle += 15;
 
-		//x_of_play_screen_background += 1;
-		//x_of_coin += 1;
-		//if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
+		x_of_play_screen_background += 1;
+		x_of_coin += 1;
+		if (x_of_play_screen_background >= 0) x_of_play_screen_background = -100;
 
 		camera_x += 1;
 
-		//move_obstacle(1); // 1 means moving RIGHT
-		//move_spikes(1); // 1 means moving RIGHT
-		//ball_hit_spike();
+		move_obstacle(1); // 1 means moving RIGHT
+		move_spikes(1); // 1 means moving RIGHT
+		ball_hit_spike();
 	}
 	void move_ball_forwards(){
 		rotating_angle -= 15;
 
-		//x_of_play_screen_background -= 1;
-		//x_of_coin -= 1;
-		//if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
+		x_of_play_screen_background -= 1;
+		x_of_coin -= 1;
+		if (x_of_play_screen_background <= -400) x_of_play_screen_background = 0;
 
 		camera_x -= 1;
 
-		//move_obstacle(-1); // -1 means moving LEFT
-		//move_spikes(-1); // -1 means moving LEFT
-		//ball_hit_spike();
+		move_obstacle(-1); // -1 means moving LEFT
+		move_spikes(-1); // -1 means moving LEFT
+		ball_hit_spike();
 	}
+
+
+
+	void move_ball_backwards_in_level_2(){
+		rotating_angle += 15;
+
+		camera_x += 1;
+	}
+	void move_ball_forwards_in_level_2(){
+		rotating_angle -= 15;
+
+		camera_x -= 1;
+
+	}
+
+
 
 	void move_screen_backwards(){
 		if (camera_x < 0) camera_x++;
@@ -185,7 +202,7 @@
 	}
 
 
-// ball jump up/down
+	// ball jump up/down
 	void jump_up(){
 		isJumping = true;
 		jump_on_obstacle();
@@ -209,7 +226,7 @@
 	}
 
 
-// making pages 
+	// making pages 
 	void make_map(){
 
 
@@ -217,13 +234,13 @@
 		iShowImage((100 + camera_x)*vw, camera_y*vh, 100 * vw, 70 * vh, platform_image);
 
 		left_of_first_small_ground = (250 + camera_x);
-		if ((left_of_first_small_ground >= 24 && left_of_first_small_ground <= 74) && ball_y == 28*vh) ball_y = -50 * vh;
+		if ((left_of_first_small_ground >= 24 && left_of_first_small_ground <= 74) && ball_y == 28 * vh) ball_y = -50 * vh;
 		else ball_y = ball_y;
 
 		iShowImage((250 + camera_x)*vw, camera_y*vh, 30 * vw, 70 * vh, platform_image);
 
 		left_of_inclined_ramp = (401 + camera_x);
-		iShowImage((401 + camera_x)*vw, (camera_y+6) * vh, 20 * vw, 60 * vh, inclined_ramp);
+		iShowImage((401 + camera_x)*vw, (camera_y + 6) * vh, 20 * vw, 60 * vh, inclined_ramp);
 
 		left_of_large_ground = (320 + camera_x);
 		if ((left_of_large_ground >= 24 && left_of_large_ground <= 64) && ball_y == 28 * vh) ball_y = -50 * vh;
@@ -231,7 +248,7 @@
 
 		iShowImage((320 + camera_x)*vw, camera_y*vh, 100 * vw, 70 * vh, platform_image);
 
-		iShowImage((419 + camera_x)*vw, (camera_y+ 32.5)*vh, 50 * vw, 60 * vh, platform_image);
+		iShowImage((419 + camera_x)*vw, (camera_y + 32.5)*vh, 50 * vw, 60 * vh, platform_image);
 
 	}
 
@@ -291,7 +308,7 @@
 			iLine(drag_start_x, drag_start_y, mouseX, mouseY);
 		}
 
-		if (level_failed) show_level_failed_screen();
+		if (level_failed == 1) show_level_failed_screen();
 	}
 	void show_levels_screen() {
 
@@ -299,16 +316,42 @@
 		for (int i = 0; i < 20; i++){
 
 			double left = (i * 100) + camera_x;
+			int current_i = i + 1; 
 			double top = ((i + 1) * 100) + camera_y;
 
 			iShowImage(left*vw, camera_y*vh, 100 * vw, 100 * vh, ground_image);
-			iShowImage(0, top*vh, 100 * vw, 100 * vh, ground_image);
+
+			
 		}
+
+
+		for (int i = 0; i < 20; i++){
+
+			double left = (i * 100) + camera_x;
+			int current_i = i + 1;
+			double top = ((i + 1) * 100) + camera_y;
+
+			iShowImage(left*vw, (100 + camera_y) * vh, 100 * vw, 100 * vh, ground_image);
+
+
+		}
+
+		for (int i = 0; i < 20; i++){
+
+			double left = (i * 100) + camera_x;
+
+			iShowImage(left*vw, (200 + camera_y) * vh, 100 * vw, 100 * vh, ground_image);
+
+
+		}
+
+
 
 		make_map();
 		make_ball();
 
 
+		iShowImage(2.5*vh, 87.5*vh, 10 * vh, 10 * vh, back_image);
 
 
 
@@ -346,6 +389,9 @@
 			}
 		}
 
+
+
+		iShowImage(2.5*vh, 87.5*vh, 10 * vh, 10 * vh, back_image);
 
 		if (ball_y == -50 * vh) show_level_2_failed_screen();
 
@@ -388,6 +434,47 @@
 	}
 
 
+
+	// additional buttons 
+
+	void go_back_from_level_1(){
+		play_button_clicked = 0;
+		reset_gamestate();
+
+		//reset variables
+		score = 0;
+		level_failed = 0;
+		show_blast = false;
+		blast_timer = 0;
+
+		//reset ball position
+		ball_x = 20 * vw;
+		ball_y = 23 * vh;
+
+		//reset movement and physics
+		ball_vx = 0;
+		ball_vy = 0;
+		rotating_angle = 0;
+		GROUND_Y = 28 * vh;
+
+		//reset background scroll
+		x_of_play_screen_background = 0;
+		x_of_coin = 5;
+
+		//reset obstacle & spike positions
+		OBSTACLE_X = 100;
+		OBSTACLE_Y = 50;
+		SPIKE_X = 90;
+
+		for (int i = 0; i < 50; i++){
+			coins[i].collected = false;
+		}
+
+	}
+
+	void go_back_from_level_2(){
+		levels_button_clicked = 0;
+	}
 
 
 #endif
