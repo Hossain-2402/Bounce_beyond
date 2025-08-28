@@ -75,40 +75,16 @@ void iMouse(int button, int state, int mx, int my)
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 			play_button_clicked = 1;
+			levels_button_clicked = 0;
+			credits_button_clicked = 0 ;
+			quit_button_clicked = 0;
 		}
-		if ((mx >= 2.5 * vh && mx <= 12.5 * vh) && (my >= 87.5 * vh && my <= 97.5 * vh)) {
-			play_button_clicked = 0;
-			reset_gamestate();
-
-			//reset variables
-			score = 0;
-			level_failed = 0;
-			show_blast = false;
-			blast_timer = 0;
-
-			//reset ball position
-			ball_x = 20 * vw;
-			ball_y = 23 * vh;
-
-			//reset movement and physics
-			ball_vx = 0;
-			ball_vy = 0;
-			rotating_angle = 0;
-			GROUND_Y = 28 * vh;
-
-			//reset background scroll
-			x_of_play_screen_background = 0;
-			x_of_coin = 5;
-
-			//reset obstacle & spike positions
-			OBSTACLE_X = 100;
-			OBSTACLE_Y = 50;
-			SPIKE_X = 90;
-
-			for (int i = 0; i < 50; i++){
-				coins[i].collected = false;
-			}
-
+		if ((mx >= 2.5 * vh && mx <= 12.5 * vh) && (my >= 87.5 * vh && my <= 97.5 * vh)) { // back button
+			
+			if(play_button_clicked) go_back_from_level_1();
+			else if (levels_button_clicked) go_back_from_level_2();
+			else{}
+		
 		}
 		if ((mx >= 46.3 * vw && mx <= 51.3 * vw) && (my >= 35 * vh && my <= 45 * vh)){
 			play_button_clicked = 0;
@@ -160,7 +136,7 @@ void iMouse(int button, int state, int mx, int my)
 		drag_start_x = mx;
 		drag_start_y = my;
 	}
-	else if (projectileMode && button == GLUT_LEFT_BUTTON && state == GLUT_UP && isDragging){
+	if (projectileMode && button == GLUT_LEFT_BUTTON && state == GLUT_UP && isDragging){
 		isDragging = false;
 		launched = true;
 
@@ -194,6 +170,7 @@ void fixedUpdate()
 {
 	if (show_blast) return; //stop everything if level failed
 	if (ball_y == -50 * vh) return;
+	if (launched) return;
 
 
 	if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT))
@@ -202,10 +179,10 @@ void fixedUpdate()
 		if (play_button_clicked) move_ball_backwards();
 		if (levels_button_clicked) {
 			move_screen_backwards();
-			move_ball_backwards();
+			move_ball_backwards_in_level_2();
 
 
-			if (left_of_inclined_ramp >= 4 && left_of_inclined_ramp <= 23 ) camera_y += 3;
+			if (left_of_inclined_ramp >= 4 && left_of_inclined_ramp <= 23) camera_y += 3;
 			else camera_y = camera_y;
 		}
 
@@ -216,9 +193,9 @@ void fixedUpdate()
 
 		if (play_button_clicked) move_ball_forwards();
 		if (levels_button_clicked){
-			move_screen_forwards(); 
-			move_ball_forwards();
-			if (left_of_inclined_ramp >= 7 && left_of_inclined_ramp <= 25) camera_y-= 3;
+			move_screen_forwards();
+			move_ball_forwards_in_level_2();
+			if (left_of_inclined_ramp >= 7 && left_of_inclined_ramp <= 25) camera_y -= 3;
 			else camera_y = camera_y;
 		}
 	}
