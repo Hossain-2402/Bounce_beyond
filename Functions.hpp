@@ -82,6 +82,58 @@ void make_coins(){
 		iShowImage(x*vw, y*vh, coins[i].width * vh, coins[i].height * vh, coins[i].coin_image);
 	}
 }
+void place_coins(){
+	coins[0].x = 100;  coins[0].y = 30;
+	coins[1].x = 115;  coins[1].y = 30;
+	coins[2].x = 130;  coins[2].y = 40;
+	coins[3].x = 145;  coins[3].y = 50;
+	coins[4].x = 160;  coins[4].y = 30;
+	coins[5].x = 190;  coins[5].y = 30;
+	coins[6].x = 210;  coins[6].y = 50;
+	coins[7].x = 230;  coins[7].y = 70;
+	coins[8].x = 250;  coins[8].y = 50;
+	coins[9].x = 270;  coins[9].y = 30;
+	coins[10].x = 370;  coins[10].y = 50;
+	coins[11].x = 380;  coins[11].y = 55;
+	coins[12].x = 360;  coins[12].y = 55;
+	coins[13].x = 390;  coins[13].y = 60;
+	coins[14].x = 350;  coins[14].y = 60;
+	coins[15].x = 380;  coins[15].y = 65;
+	coins[16].x = 360;  coins[16].y = 65;
+	coins[17].x = 370;  coins[17].y = 70;
+	coins[18].x = 500;  coins[18].y = 90;
+	coins[19].x = 475;  coins[19].y = 90;
+	coins[20].x = 487;  coins[20].y = 110;
+	coins[21].x = 590;  coins[21].y = 70;
+	coins[22].x = 590;  coins[22].y = 100;
+	coins[23].x = 590;  coins[23].y = 90;
+	coins[24].x = 590;  coins[24].y = 80;
+	coins[25].x = 595;  coins[25].y = 80;
+	coins[26].x = 585;  coins[26].y = 80;
+	coins[27].x = 600;  coins[27].y = 90;
+	coins[28].x = 580;  coins[28].y = 90;
+	coins[29].x = 590;  coins[29].y = 110;
+
+	for (int i = 0; i < 50; i++) {
+		coins[i].collected = false;
+	}
+}
+void make_coins2(){
+	for (int i = 0; i < 50; i++) {
+		if (coins[i].collected) continue; // Skip collected 
+
+		double coin_x = (coins[i].x + camera_x)* vw;
+		double coin_y = (coins[i].y + camera_y)* vh;
+
+		if (abs(ball_x - coin_x) < 5 * vw && abs(ball_y - coin_y) < 5 * vh) {
+			coins[i].collected = true;
+			score += 10;
+			continue;
+		}
+
+		iShowImage(coin_x, coin_y, coins[i].width * vh, coins[i].height * vh, coins[i].coin_image);
+	}
+}
 
 // moving things
 void move_obstacle(int moving_direction) { // moving_direction = 1 (moving RIGHT) moving_direction = -1 (moving LEFT)
@@ -384,10 +436,15 @@ void show_levels_screen() {
 
 	}
 
-
+	//Score
+	char score_text[50];
+	iSetColor(255, 255, 255);
+	sprintf_s(score_text, "Score: %d", score);
+	iText(90 * vw, 95 * vh, score_text, GLUT_BITMAP_HELVETICA_18);
 
 	make_map();
 	make_ball();
+	make_coins2(); //custom coins
 
 
 	iShowImage(2.5*vh, 87.5*vh, 10 * vh, 10 * vh, back_image);
