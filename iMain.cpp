@@ -1,4 +1,3 @@
-
 #include "iGraphics.h"
 #include <cmath>
 #include <cstring>
@@ -6,6 +5,7 @@
 
 #include "Variables.h"
 #include "Functions.h"
+#include "Drone.h"
 
 using namespace std;
 
@@ -76,15 +76,15 @@ void iMouse(int button, int state, int mx, int my)
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 			play_button_clicked = 1;
 			levels_button_clicked = 0;
-			credits_button_clicked = 0 ;
+			credits_button_clicked = 0;
 			quit_button_clicked = 0;
 		}
 		if ((mx >= 2.5 * vh && mx <= 12.5 * vh) && (my >= 87.5 * vh && my <= 97.5 * vh)) { // back button
-			
-			if(play_button_clicked) go_back_from_level_1();
+
+			if (play_button_clicked) go_back_from_level_1();
 			else if (levels_button_clicked) go_back_from_level_2();
 			else{}
-		
+
 		}
 		if ((mx >= 46.3 * vw && mx <= 51.3 * vw) && (my >= 35 * vh && my <= 45 * vh)){
 			play_button_clicked = 0;
@@ -168,10 +168,15 @@ void iMouse(int button, int state, int mx, int my)
 
 void fixedUpdate()
 {
-	if (show_blast) return; //stop everything if level failed
+
 	if (ball_y == -50 * vh) return;
 	if (launched) return;
+	//if (is_floating_animation) return;
 
+	ball_hit_spike();
+	drone_hit();
+
+	if (show_blast) { return; } //stop everything if level failed
 
 	if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT))
 	{
@@ -222,6 +227,8 @@ void fixedUpdate()
 		ball_vx = 0;
 		ball_vy = 0;
 	}
+
+
 }
 
 void iTimer(){
@@ -304,7 +311,7 @@ int main()
 
 
 
-
+	srand((unsigned)time(NULL));
 	iInitialize(100 * vw, 100 * vh, "Project Title");
 
 	// Generating Images
@@ -321,16 +328,22 @@ int main()
 	}
 	restart_image = iLoadImage("restart_button.png");
 
-	ground_image = iLoadImage("map.png");
+	ground_image = iLoadImage("map.jpg");
 	platform_image = iLoadImage("Ground.png");
 	drop_ground_image = iLoadImage("drop.png");
 
 	inclined_ramp = iLoadImage("inclined_ramp.png");
 
+	drone_image = iLoadImage("drone.png");
+	initiate_drone();
+
 
 	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
+
 	// Keep oscillating the spike 
 	iSetTimer(150, change_y_of_obstacle);
+	iSetTimer(1000 / 60, move_drone_y);
+	iSetTimer(150, change_y_of_floating_platform);
 	iStart();
 	return 0;
 }
