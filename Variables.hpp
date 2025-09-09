@@ -36,6 +36,8 @@ struct Coins{
 	int height = 8;
 	int width = 8;
 	bool collected = false;
+	double x;
+	double y;
 }coins[50];
 
 int score = 0;
@@ -129,3 +131,5 @@ int mouseX, mouseY;
 
 
 #endif
+
+
