@@ -1,4 +1,4 @@
-#include "iGraphics.h"
+##include "iGraphics.h"
 #include <cmath>
 #include <cstring>
 
@@ -326,6 +326,7 @@ int main()
 	for (int i = 0; i < 50; i++){
 		coins[i].coin_image = iLoadImage("coin_image_1.png");
 	}
+	place_coins();
 	restart_image = iLoadImage("restart_button.png");
 
 	ground_image = iLoadImage("map.jpg");
@@ -347,3 +348,4 @@ int main()
 	iStart();
 	return 0;
 }
+
