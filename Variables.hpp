@@ -7,7 +7,9 @@
 int vh = 5;
 int vw = 10;
 
-
+//ball jump
+int jump_count = 0;            
+bool space_was_pressed = false;
 
 
 // Images
@@ -38,9 +40,10 @@ struct Coins{
 	bool collected = false;
 	double x;
 	double y;
-}coins[50];
+}coins[200];
 
 int score = 0;
+//extern int heart_count;
 
 
 // Toggle buttons
@@ -110,7 +113,7 @@ int counter = 0;
 
 double another_counter = 0;
 
-
+//bool collision_handled = false;
 
 //projectile
 bool projectileMode = false;
