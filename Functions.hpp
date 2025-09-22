@@ -1,7 +1,7 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
-#include "Variables.h"
-#include "Drone.h"
+#include "Variables.hpp"
+#include "Drone.hpp"
 
 // hover effects
 void enlarge_play()
@@ -57,7 +57,7 @@ void make_obstacles(){
 	iShowImage(SPIKE_X*vw, 24 * vh, 37.5 * vw, 12.5 * vh, spike_image);
 }
 void make_coins(){
-	for (int i = 0; i < 50; i++){
+	for (int i = 0; i < 200; i++){
 		//skip drawing if collected
 		if (coins[i].collected){
 			continue;
@@ -194,10 +194,22 @@ void show_level_2_failed_screen(){
 	iText(42.5 * vw, 55 * vh, "LEVEL FAILED", GLUT_BITMAP_HELVETICA_18);
 }
 void ball_hit_spike(){
+
+	if (collision_handled) return;
+	if (collision_cooldown > 0) return;
+
 	if ((SPIKE_X >= -15 && SPIKE_X <= 20) && ball_y == 28 * vh) {
 		printf("Spike Hit!\n");
-		show_blast = true;
-		blast_timer = 0;
+
+		if (heart_count <= 0){
+			show_blast = true;
+			blast_timer = 0;
+		}
+		else{
+			heart_count -= 1;
+		}
+		collision_handled = true;
+		collision_cooldown = COLLISION_COOLDOWN_FRAMES;
 	}
 }
 
@@ -214,8 +226,10 @@ void move_ball_backwards(){
 	move_obstacle(1); // 1 means moving RIGHT
 	move_spikes(1); // 1 means moving RIGHT
 	move_drone_x(1);
-	ball_hit_spike();
-	drone_hit();
+	move_heart_x(1);
+	//ball_hit_spike();
+	//drone_hit();
+	//heart_hit();
 }
 void move_ball_forwards(){
 	rotating_angle -= 15;
@@ -229,8 +243,10 @@ void move_ball_forwards(){
 	move_obstacle(-1); // -1 means moving LEFT
 	move_spikes(-1); // -1 means moving LEFT
 	move_drone_x(-1);
-	ball_hit_spike();
-	drone_hit();
+	move_heart_x(-1);
+	//ball_hit_spike();
+	//drone_hit();
+	//heart_hit();
 }
 
 
@@ -260,27 +276,29 @@ void move_screen_forwards(){
 
 
 // ball jump up/down
-void jump_up(){
-	isJumping = true;
-	jump_on_obstacle();
-	//drone_hit();
-
-	ball_vy = JUMP_SPEED;
-	ball_vy += GRAVITY;
-	ball_y += ball_vy;
+void jump_up() {
+	
+	if (jump_count < 2) {
+		ball_vy = JUMP_SPEED;
+		jump_count += 1;
+		isJumping = true;
+	}
 }
+
 void jump_down(){
-	ball_hit_spike();
-	drone_hit();
-	jump_on_obstacle();
+	//ball_hit_spike();
+	//drone_hit();
+	//heart_hit();
+	/*jump_on_obstacle();
 	//isJumping = true;
 	ball_vy += GRAVITY;
 	ball_y += ball_vy;
 	if (ball_y < GROUND_Y) {
 		ball_y = GROUND_Y;
-		//isJumping = false;
+		jump_count = 0;
+		isJumping = false;
 		ball_vy = 0;
-	}
+	}*/
 }
 
 
@@ -311,12 +329,18 @@ void make_map(){
 	left_of_spike = (469 + camera_x);
 	iShowImage((469 + camera_x)*vw, (camera_y + 32.5)*vh, 50 * vw, 60 * vh, platform_image);
 	iShowImage((469 + camera_x)*vw, (camera_y + 52.5)*vh, 50 * vw, 15 * vh, spike_image);
-	if ((left_of_spike >= -25 && left_of_spike <= 24) && ball_y == 28 * vh){
-		show_blast = true;
+	/*if ((left_of_spike >= -25 && left_of_spike <= 24) && ball_y == 28 * vh){
+		if (heart_count <= 0) {
+			show_blast = true;
+			blast_timer = 0;
+		}
+		else {
+			heart_count -= 1;
+		}
 
 	}
 	else ball_y = ball_y;
-
+	*/
 
 	iShowImage((519 + camera_x)*vw, (camera_y + 32.5)*vh, 50 * vw, 60 * vh, platform_image);
 
@@ -377,9 +401,12 @@ void show_play_screen() {
 	iText(90 * vw, 95 * vh, score_text, GLUT_BITMAP_HELVETICA_18);
 
 	// Eda obstacle
+	make_transparentHeart();
 	make_coins();
 	make_obstacles();
 	show_drone();
+	show_heart();
+	show_filledHeart();
 
 	make_ball();
 
@@ -505,6 +532,7 @@ void reset_gamestate(){
 	ball_y = GROUND_Y;
 
 	initiate_drone();
+	initiate_heart();
 
 	//x_of_play_screen_background = 0;
 	//x_of_coin = 5;
@@ -569,6 +597,8 @@ void go_back_from_level_1(){
 	for (int i = 0; i < 50; i++){
 		coins[i].collected = false;
 	}
+
+	initiate_heart();
 
 }
 
