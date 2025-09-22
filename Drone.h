@@ -1,7 +1,7 @@
 #ifndef DRONE_H
 #define DRONE_H
-#include "Variables.h"
-#include "Functions.h"
+#include "Variables.hpp"
+
 
 double euclideanDistance(double x1, double y1, double x2, double y2){
 	double distance = (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
@@ -17,11 +17,18 @@ int drone_X = OBSTACLE_X + 55;
 double drone_Y = 24;
 int drone_number;
 
+extern bool collision_handled ;
+extern int heart_count;
+int collision_cooldown = 0;
+const int COLLISION_COOLDOWN_FRAMES = 20;
+
+
 struct Drone{
 	//int drone_number = 0;
 	int drone_x;
 	double drone_y;
 	int drone_direction;
+
 };
 
 Drone drones[3];
@@ -88,13 +95,33 @@ void move_drone_y(){
 
 
 void drone_hit(){
+
+	if (collision_handled) return;
+	if (collision_cooldown > 0) return;
+
 	for (int i = 0; i < drone_number; i++){
 		double distance = euclideanDistance((drones[i].drone_x + drone_width / 2)*vw, (drones[i].drone_y + drone_height / 2)*vh, ball_x, ball_y);
+		
+		/*double ball_radius = (15.0 * vh) / 2.0;           
+		double drone_radius = (drone_width * vw) / 2.0;   
+		double hit_range = ball_radius + drone_radius;
+		*/
+
 		if (distance <= 7 * vw){
 			printf("Drone hit!\n");
-			show_blast = true;
-			blast_timer = 0;
+
+			if (heart_count <= 0){
+				show_blast = true;
+				blast_timer = 0;
+			}
+			else{
+				heart_count -= 1;	
+			}
+			collision_handled = true;
+			collision_cooldown = COLLISION_COOLDOWN_FRAMES;
+			break;
 		}
+		
 	}
 }
 
@@ -104,6 +131,89 @@ printf("Drone hit!\n");
 show_blast = true;
 blast_timer = 0;
 }*/
+
+//Heart(Lifeline) 
+
+int heart_image;
+int heart_filled_image;
+int heart_transparent_image;
+const int heart_width = 4;
+const int heart_height = 8;
+//int heart_x = 320;
+const int heart_y = 76 ;
+const int heart_transparent_y = 87 ;
+int heart_transparent_x = 90 ;
+const int heart_filled_y = 87 ;
+int heart_filled_x = 90 ;
+//int heart_count = 0;
+
+struct Heart{
+	int heart_x;
+	bool heart_miss;
+};
+
+struct TransparentHeart{
+	
+};
+
+Heart hearts[3];
+TransparentHeart transparentHearts[3];
+
+void initiate_heart(){
+	heart_count = 0;
+	for (int i = 0; i < 3; i++){
+		hearts[i].heart_x = (290 + i * 299);
+		hearts[i].heart_miss = true;
+	}
+}
+
+void show_heart(){
+	for (int i = 0; i < 3; i++){
+		if (hearts[i].heart_miss == true){
+			iShowImage((hearts[i].heart_x)*vw, heart_y*vh, heart_width * vw, heart_height * vh, heart_image);
+		}	
+	}
+}
+
+void move_heart_x(int direction){
+	for (int i = 0; i < 3; i++){
+		hearts[i].heart_x += direction;
+	}
+}
+
+void heart_hit(){
+	for (int i = 0; i < 3; i++){
+		double distance = euclideanDistance((hearts[i].heart_x + heart_width / 2)*vw, (heart_y + heart_height / 2)*vh, ball_x, ball_y);
+
+		double ball_radius = (15.0 * vh) / 2.0;            
+		double heart_radius = (heart_width * vw) / 2.0;    
+
+		double hit_range = ball_radius + heart_radius;
+
+		if (distance <= hit_range){
+			printf("Heart hit");
+			if (hearts[i].heart_miss == true){
+				hearts[i].heart_miss = false;
+				heart_count += 1;
+			}
+		}
+	}
+}
+
+void make_transparentHeart(){
+	for (int i = 0; i < 3; i++){
+		iShowImage((heart_transparent_x + i * 3)*vw, heart_transparent_y*vh, 3 * vw, 6 * vh, heart_transparent_image);
+	}
+}
+
+void show_filledHeart(){
+	if (heart_count>0){
+		for (int i = 0; i < heart_count; i++){
+			iShowImage((heart_filled_x + i * 3)*vw, heart_filled_y*vh, 3 * vw, 6 * vh, heart_filled_image);
+		}
+	}
+}
+
 
 
 
