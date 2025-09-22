@@ -1,11 +1,14 @@
-##include "iGraphics.h"
+#include "iGraphics.h"
 #include <cmath>
 #include <cstring>
 
 
-#include "Variables.h"
-#include "Functions.h"
-#include "Drone.h"
+#include "Variables.hpp"
+#include "Functions.hpp"
+#include "Drone.hpp"
+
+int heart_count = 0;
+bool collision_handled = false;
 
 using namespace std;
 
@@ -118,6 +121,8 @@ void iMouse(int button, int state, int mx, int my)
 			for (int i = 0; i < 50; i++){
 				coins[i].collected = false;
 			}
+
+			initiate_heart();
 		}
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 60 * vh && my <= 70 * vh)) {
 			levels_button_clicked = 1;
@@ -168,13 +173,15 @@ void iMouse(int button, int state, int mx, int my)
 
 void fixedUpdate()
 {
+	collision_handled = false;
+	if (collision_cooldown > 0) collision_cooldown--;
+
 
 	if (ball_y == -50 * vh) return;
 	if (launched) return;
 	//if (is_floating_animation) return;
 
-	ball_hit_spike();
-	drone_hit();
+
 
 	if (show_blast) { return; } //stop everything if level failed
 
@@ -204,18 +211,40 @@ void fixedUpdate()
 			else camera_y = camera_y;
 		}
 	}
+	//jump code
 
-	if (isKeyPressed(' ')) {
+	bool spacePressed = isKeyPressed(' ');
+	bool justPressed = (spacePressed && !space_was_pressed);
+	space_was_pressed = spacePressed;
 
-		jump_up();
-
+	if (justPressed && jump_count < 2) {
+		ball_vy = JUMP_SPEED;
+		jump_count += 1;
+		isJumping = true;
+	}
+	else {
+		ball_vy += GRAVITY;
 	}
 
-	if (!isKeyPressed(' ')) {
+	
+	ball_y += ball_vy;
 
-		jump_down();
+	
+	jump_on_obstacle();
 
+	if (ball_y <= GROUND_Y) {
+		ball_y = GROUND_Y;
+		ball_vy = 0;
+		isJumping = false;
+		jump_count = 0;
 	}
+
+
+	ball_hit_spike();
+	drone_hit();
+	heart_hit();
+
+
 
 	if (isKeyPressed('p')){
 		isDragging = false;
@@ -232,6 +261,7 @@ void fixedUpdate()
 }
 
 void iTimer(){
+
 
 	if (launched) {
 		// Gravity effect
@@ -323,7 +353,7 @@ int main()
 	obstacle_image_4 = iLoadImage("obstacle_image_4.png");
 	spike_image = iLoadImage("spike_image_2.png");
 	blast_image = iLoadImage("blast_image(1).png");
-	for (int i = 0; i < 50; i++){
+	for (int i = 0; i < 200; i++){
 		coins[i].coin_image = iLoadImage("coin_image_1.png");
 	}
 	place_coins();
@@ -337,6 +367,12 @@ int main()
 
 	drone_image = iLoadImage("drone.png");
 	initiate_drone();
+	initiate_heart();
+	//make_transparentHeart();
+
+	heart_image = iLoadImage("heart.png");
+	heart_filled_image = iLoadImage("heart_filled.png");
+	heart_transparent_image = iLoadImage("heart_transparent.png");
 
 
 	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
