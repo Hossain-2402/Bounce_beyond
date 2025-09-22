@@ -3,9 +3,12 @@
 #include <cstring>
 
 
-#include "Variables.hpp"
-#include "Functions.hpp"
-#include "Drone.hpp"
+#include "Variables.h"
+
+#include "Functions.h"
+
+#include "Drone.h"
+
 
 int heart_count = 0;
 bool collision_handled = false;
@@ -23,6 +26,9 @@ void iDraw()
 	else if (levels_button_clicked) {
 		show_levels_screen();
 	}
+	else if (leaderboard_button_clicked){
+		showScoreboard();
+	}
 	else {
 		create_landing_page();
 	}
@@ -37,6 +43,13 @@ void iMouseMove(int mx, int my)
 
 void iPassiveMouseMove(int mx, int my)
 {
+	if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 10 && my <= 20)) {
+		leaderboard_button_enlarge = 1;
+	}
+	else {
+		leaderboard_button_enlarge = 0;
+	}
+
 	if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 		play_button_enlarge = 1;
 	}
@@ -81,6 +94,7 @@ void iMouse(int button, int state, int mx, int my)
 			levels_button_clicked = 0;
 			credits_button_clicked = 0;
 			quit_button_clicked = 0;
+			
 		}
 		if ((mx >= 2.5 * vh && mx <= 12.5 * vh) && (my >= 87.5 * vh && my <= 97.5 * vh)) { // back button
 
@@ -126,6 +140,7 @@ void iMouse(int button, int state, int mx, int my)
 		}
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 60 * vh && my <= 70 * vh)) {
 			levels_button_clicked = 1;
+			
 		}
 
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 40 * vh && my <= 50 * vh)) {
@@ -133,6 +148,14 @@ void iMouse(int button, int state, int mx, int my)
 		}
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 20 * vh && my <= 30 * vh)) {
 			quit_button_clicked = 1;
+		}
+
+		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 10 && my <= 20)) {
+			leaderboard_button_clicked = 1;
+			play_button_clicked = 0;
+			levels_button_clicked = 0;
+			credits_button_clicked = 0;
+			quit_button_clicked = 0;
 		}
 	}
 
@@ -344,6 +367,9 @@ int main()
 	srand((unsigned)time(NULL));
 	iInitialize(100 * vw, 100 * vh, "Project Title");
 
+	askPlayerName();
+	
+
 	// Generating Images
 	landing_page_background_image = iLoadImage("background_image.png");
 	button_image = iLoadImage("button_image.png");
@@ -384,4 +410,6 @@ int main()
 	iStart();
 	return 0;
 }
+
+
 
