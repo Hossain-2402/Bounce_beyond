@@ -8,7 +8,6 @@ char playerName[50];
 
 bool scoreSaved = false;
 
-
 // vw & vh
 int vh = 5;
 int vw = 10;
@@ -140,6 +139,5 @@ int mouseX, mouseY;
 
 
 #endif
-
 
 
