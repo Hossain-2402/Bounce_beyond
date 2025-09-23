@@ -1,7 +1,11 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
-#include "Variables.h"
-#include "Drone.h"
+#include "Variables.hpp"
+#include "Drone.hpp"
+#include "Audio.hpp"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 void saveScore(const char *playerName, int points, const char *file = "scores.txt");
 
@@ -18,17 +22,17 @@ void enlarge_levels()
 	iSetColor(125, 0, 255);
 	iText(45.5 * vw, 65 * vh, "LEVELS", GLUT_BITMAP_HELVETICA_18);
 }
-void enlarge_credits()
+/*void enlarge_credits()
 {
 	iShowImage(25 * vw, 20 * vh, 50 * vw, 50 * vh, button_image);
 	iSetColor(125, 0, 255);
 	iText(45.5 * vw, 45 * vh, "CREDITS", GLUT_BITMAP_HELVETICA_18);
-}
+}*/
 void enlarge_quit()
 {
 	iShowImage(25 * vw, 0 * vh, 50 * vw, 50 * vh, button_image);
 	iSetColor(255, 0, 0);
-	iText(47.5 * vw, 25 * vh, "QUIT", GLUT_BITMAP_HELVETICA_18);
+	iText(42 * vw, 25 * vh, "LEADERBOARD", GLUT_BITMAP_HELVETICA_18);
 }
 
 // the game screen
@@ -78,6 +82,7 @@ void make_coins(){
 		if (abs(ball_x - coin_x) < 5 * vw && abs(ball_y - coin_y) < 5 * vh){
 			coins[i].collected = true;
 			score += 10;
+			PlayCoinSound();
 			continue;
 		}
 
@@ -130,6 +135,7 @@ void make_coins2(){
 		if (abs(ball_x - coin_x) < 5 * vw && abs(ball_y - coin_y) < 5 * vh) {
 			coins[i].collected = true;
 			score += 10;
+			PlayCoinSound();
 			continue;
 		}
 
@@ -189,19 +195,18 @@ void show_level_failed_screen(){
 	iSetColor(255, 0, 0);
 	iText(44 * vw, 50 * vh, score_text, GLUT_BITMAP_HELVETICA_18);
 
+
 	if (!scoreSaved) {   // <-- only save once
 		saveScore(playerName, score);
 		scoreSaved = true; // mark as saved
 	}
+
 }
 void show_level_2_failed_screen(){
 	iShowImage(0, 0, 100 * vw, 100 * vh, ground_image);
 	iSetColor(255, 0, 0);
 	iText(42.5 * vw, 55 * vh, "LEVEL FAILED", GLUT_BITMAP_HELVETICA_18);
 }
-
-
-
 void ball_hit_spike(){
 
 	if (collision_handled) return;
@@ -213,9 +218,11 @@ void ball_hit_spike(){
 		if (heart_count <= 0){
 			show_blast = true;
 			blast_timer = 0;
+			PlayBlastSound();
 		}
 		else{
 			heart_count -= 1;
+			PlayHeartLossSound();
 		}
 		collision_handled = true;
 		collision_cooldown = COLLISION_COOLDOWN_FRAMES;
@@ -366,6 +373,7 @@ void make_map(){
 
 }
 
+
 void askPlayerName() {
 	printf("Enter your name: ");
 	fgets(playerName, 50, stdin); // read input from console
@@ -376,8 +384,10 @@ void askPlayerName() {
 	}
 }
 
+
+
 void create_landing_page() {
-	iShowImage(0, 0, 100 * vw, 100 * vh, play_screen_background_image);
+	iShowImage(0, 0, 100 * vw, 100 * vh, landing_page_background_image);
 
 	iShowImage(30 * vw, 65 * vh, 40 * vw, 40 * vh, button_image);
 	iSetColor(0, 0, 0);
@@ -388,28 +398,29 @@ void create_landing_page() {
 	iSetColor(0, 0, 0);
 	iText(46 * vw, 65 * vh, "LEVELS");
 
-	iShowImage(30 * vw, 25 * vh, 40 * vw, 40 * vh, button_image);
-	iSetColor(0, 0, 0);
-	iText(46 * vw, 45 * vh, "CREDITS");
+	//iShowImage(30 * vw, 25 * vh, 40 * vw, 40 * vh, button_image);
+	//iSetColor(0, 0, 0);
+	//iText(46 * vw, 45 * vh, "CREDITS");
 
 	iShowImage(30 * vw, 5 * vh, 40 * vw, 40 * vh, button_image);
 	iSetColor(0, 0, 0);
-	iText(47.5 * vw, 25 * vh, "QUIT");
+	iText(45 * vw, 25 * vh, "LEADERBOARD");
 
 	// Leaderboard button
-	iShowImage(30 * vw, 10 * vh, 40 * vw, 40 * vh, button_image);
+	iShowImage(30 * vw, 25 * vh, 40 * vw, 40 * vh, button_image);
 	iSetColor(0, 0, 0);
-	iText(44 * vw, 15 * vh, "LEADERBOARD", GLUT_BITMAP_9_BY_15);
+	iText(46 * vw, 45 * vh, "CREDIT", GLUT_BITMAP_9_BY_15);
 
 	if (leaderboard_button_enlarge == 1) {
-		iShowImage(25 * vw, 10 * vh, 50 * vw, 50 * vh, button_image);
-		iSetColor(255, 255, 0);
-		iText(42 * vw, 15 * vh, "LEADERBOARD", GLUT_BITMAP_HELVETICA_18);
+		iShowImage(25 * vw, 20 * vh, 50 * vw, 50 * vh, button_image);
+		iSetColor(125, 0, 255);
+		iText(45.5 * vw, 45 * vh, "CREDIT", GLUT_BITMAP_HELVETICA_18);
 	}
+	
 
 	if (play_button_enlarge == 1) enlarge_play();
 	if (levels_button_enlarge == 1) enlarge_levels();
-	if (credits_button_enlarge == 1) enlarge_credits();
+	//if (credits_button_enlarge == 1) enlarge_credits();
 	if (quit_button_enlarge == 1) enlarge_quit();
 
 	if (quit_button_clicked == 1) exit(0);
@@ -570,8 +581,6 @@ void reset_gamestate(){
 	//for (int i = 0; i < 50; i++){
 	//coins[i].collected = false;
 	//}
-
-	//saveScore(playerName, score);
 }
 
 void adjustWorldDuringProjectile() {
@@ -659,21 +668,11 @@ void change_y_of_floating_platform(){
 
 }
 
-
-
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "Variables.h"  // make sure your other game variables are included
-
-// -------------------- Score Structure --------------------
 struct Score {
 	char name[50];
 	int points;
 };
 
-// -------------------- Save Score --------------------
 void saveScore(const char* playerName, int points, const char* file) {
 	FILE* fp;
 	if (fopen_s(&fp, file, "a") == 0) {  // append mode
@@ -682,7 +681,6 @@ void saveScore(const char* playerName, int points, const char* file) {
 	}
 }
 
-// -------------------- Load Scores --------------------
 int loadScores(struct Score scores[], int maxCount, const char* file) {
 	FILE* fp;
 	if (fopen_s(&fp, file, "r") != 0) return 0;
@@ -696,7 +694,6 @@ int loadScores(struct Score scores[], int maxCount, const char* file) {
 	return count;
 }
 
-// -------------------- Sort Scores (High to Low) --------------------
 void sortScores(struct Score scores[], int count) {
 	for (int i = 0; i < count - 1; i++) {
 		for (int j = i + 1; j < count; j++) {
@@ -709,14 +706,13 @@ void sortScores(struct Score scores[], int count) {
 	}
 }
 
-// -------------------- Show Top Scores --------------------
 void showScoreboard() {
 	struct Score scores[100];
-	int count = loadScores(scores, 100, "scores.txt");  // always specify file
+	int count = loadScores(scores, 100, "scores.txt");
 
 	if (count == 0) {
 		iSetColor(255, 255, 255);
-		iText(10*vw, 90*vh, "No scores yet!", GLUT_BITMAP_HELVETICA_18);
+		iText(10 * vw, 90 * vh, "No scores yet!", GLUT_BITMAP_HELVETICA_18);
 		return;
 	}
 
@@ -729,14 +725,10 @@ void showScoreboard() {
 	for (int i = 0; i < count && i < 10; i++) {  // top 10
 		char line[100];
 		sprintf_s(line, sizeof(line), "%d. %s - %d", i + 1, scores[i].name, scores[i].points);
-		iText(10*vw, y*vh, line, GLUT_BITMAP_HELVETICA_18);
+		iText(10 * vw, y*vh, line, GLUT_BITMAP_HELVETICA_18);
 		y -= 5;
 	}
 }
 
-// -------------------- Example Usage --------------------
-// Call saveScore("Player1", 50, "scores.txt") when level ends
-// Call showScoreboard() inside your landing page or a scoreboard screen
 
 #endif
-
