@@ -3,12 +3,10 @@
 #include <cstring>
 
 
-#include "Variables.h"
-
-#include "Functions.h"
-
-#include "Drone.h"
-
+#include "Variables.hpp"
+#include "Functions.hpp"
+#include "Drone.hpp"
+#include "Audio.hpp"
 
 int heart_count = 0;
 bool collision_handled = false;
@@ -43,13 +41,13 @@ void iMouseMove(int mx, int my)
 
 void iPassiveMouseMove(int mx, int my)
 {
-	if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 10 && my <= 20)) {
+
+	/*if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 10 && my <= 20)) {
 		leaderboard_button_enlarge = 1;
 	}
 	else {
 		leaderboard_button_enlarge = 0;
-	}
-
+	}*/
 	if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
 		play_button_enlarge = 1;
 	}
@@ -67,10 +65,10 @@ void iPassiveMouseMove(int mx, int my)
 
 
 	if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 40 * vh && my <= 50 * vh)) {
-		credits_button_enlarge = 1;
+		leaderboard_button_enlarge = 1;
 	}
 	else{
-		credits_button_enlarge = 0;
+		leaderboard_button_enlarge = 0;
 	}
 
 
@@ -90,14 +88,17 @@ void iMouse(int button, int state, int mx, int my)
 	printf("%d -> %d\n", mx / vh, my / vh);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 80 * vh && my <= 90 * vh)) {
+			StopLandingMusic();   
+			PlayGameMusic();
 			play_button_clicked = 1;
 			levels_button_clicked = 0;
 			credits_button_clicked = 0;
 			quit_button_clicked = 0;
-			
 		}
 		if ((mx >= 2.5 * vh && mx <= 12.5 * vh) && (my >= 87.5 * vh && my <= 97.5 * vh)) { // back button
 
+			StopGameMusic();
+			PlayLandingMusic();
 			if (play_button_clicked) go_back_from_level_1();
 			else if (levels_button_clicked) go_back_from_level_2();
 			else{}
@@ -139,24 +140,29 @@ void iMouse(int button, int state, int mx, int my)
 			initiate_heart();
 		}
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 60 * vh && my <= 70 * vh)) {
+			StopLandingMusic();
+			PlayGameMusic();
 			levels_button_clicked = 1;
-			
+
 		}
 
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 40 * vh && my <= 50 * vh)) {
 			credits_button_clicked = 1;
+			PlayLandingMusic();
 		}
 		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 20 * vh && my <= 30 * vh)) {
-			quit_button_clicked = 1;
+			leaderboard_button_clicked = 1;
+			StopGameMusic();
+			StopLandingMusic();
+			Audio_CloseAll();
 		}
-
-		if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 10 && my <= 20)) {
+		/*if ((mx >= 30 * vw && mx <= 70 * vw) && (my >= 10 && my <= 20)) {
 			leaderboard_button_clicked = 1;
 			play_button_clicked = 0;
 			levels_button_clicked = 0;
 			credits_button_clicked = 0;
 			quit_button_clicked = 0;
-		}
+		}*/
 	}
 
 	if (projectileMode && button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
@@ -368,10 +374,9 @@ int main()
 	iInitialize(100 * vw, 100 * vh, "Project Title");
 
 	askPlayerName();
-	
 
 	// Generating Images
-	landing_page_background_image = iLoadImage("background_image.png");
+	landing_page_background_image = iLoadImage("Landing_Page_Image_4.jpg");
 	button_image = iLoadImage("button_image.png");
 	back_image = iLoadImage("back_button_2.png");
 	play_screen_background_image = iLoadImage("image (1).png");
@@ -399,6 +404,8 @@ int main()
 	heart_image = iLoadImage("heart.png");
 	heart_filled_image = iLoadImage("heart_filled.png");
 	heart_transparent_image = iLoadImage("heart_transparent.png");
+	Audio_OpenAll();
+	PlayLandingMusic();
 
 
 	iSetTimer(1000 / 60, iTimer); // Initialize timer for 60 FPS
@@ -410,6 +417,4 @@ int main()
 	iStart();
 	return 0;
 }
-
-
 
