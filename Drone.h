@@ -1,6 +1,7 @@
 #ifndef DRONE_H
 #define DRONE_H
 #include "Variables.hpp"
+#include "Audio.hpp"
 
 
 double euclideanDistance(double x1, double y1, double x2, double y2){
@@ -113,9 +114,11 @@ void drone_hit(){
 			if (heart_count <= 0){
 				show_blast = true;
 				blast_timer = 0;
+				PlayBlastSound();
 			}
 			else{
 				heart_count -= 1;	
+				PlayHeartLossSound();
 			}
 			collision_handled = true;
 			collision_cooldown = COLLISION_COOLDOWN_FRAMES;
@@ -195,6 +198,7 @@ void heart_hit(){
 			if (hearts[i].heart_miss == true){
 				hearts[i].heart_miss = false;
 				heart_count += 1;
+				PlayHeartGainSound();
 			}
 		}
 	}
