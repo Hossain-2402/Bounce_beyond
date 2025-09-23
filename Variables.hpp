@@ -1,6 +1,12 @@
 #ifndef VARIABLES_H
 #define VARIABLES_H
 
+int leaderboard_button_enlarge = 0;
+int leaderboard_button_clicked = 0;
+
+char playerName[50];
+
+bool scoreSaved = false;
 
 
 // vw & vh
@@ -134,5 +140,6 @@ int mouseX, mouseY;
 
 
 #endif
+
 
 
